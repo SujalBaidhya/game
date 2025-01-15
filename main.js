@@ -63,7 +63,6 @@ document.body.addEventListener("click", () => {
     else if (player.primary == "gun") {
         const tipX = cx + Math.cos(angle) * gun.size.width//gives x position of angle
         const tipY = cy + Math.sin(angle) * gun.size.width//gives y position of angle
-
         bullets.push(new Bullet(tipX, tipY, player.facing))
     }
 })
