@@ -34,11 +34,18 @@ class Player1{
         ctx.fill()
     }
     collide(){
-        if(this.position.y>=300){
-            this.directions.y=0
+        if(this.top<0){
+            this.position.y=0
+        }
+        if(this.left<0){
+            this.position.x=0
+        }
+        if(this.right>window.innerWidth){
+            this.position.x=window.innerWidth-this.size.width
         }
     }
     update(){
+        this.collide()
         this.position.y+=this.directions.y*this.speed
         this.position.x+=this.directions.x*this.speed
         if(this.bottom+this.speed+this.directions.y+5<window.innerHeight){

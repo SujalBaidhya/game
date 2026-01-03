@@ -2,6 +2,8 @@ import Player1 from "./player.js"
 import Player2 from "./player2.js"
 import Guns from "./guns.js"
 import Bullet from "./bullets.js"
+import Map from "./map1.js"
+import Enemy from "./enemy.js"
 const canvas = document.getElementById("canvas")
 const ctx = canvas.getContext("2d")
 canvas.height = window.innerHeight - 5
@@ -10,12 +12,33 @@ let player = new Player1()
 let gun = new Guns()
 let player2 = new Player2()
 let keys = {}
+let enemy=[]
+enemy[0]=new Enemy()
+function enemyMove(){
+    for(let i=enemy.length-1;i>=0;i--){
+        enemy[i].draw(ctx)
+        enemy[i].update()
+        if(enemy[i].left>player.left){
+            enemy[i].directions.x=-1
+        }
+        if(enemy[i].right<player.right){
+            enemy[i].directions.x=1
+        }
+        if(enemy[i].bottom<player.top){
+            enemy[i].directions.y=1
+        }
+        if(enemy[i].top>player.bottom){
+            enemy[i].directions.y=-1
+        }
+    }
+}
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
 let ey = cy
 let angle = 0
 let mouseactive = false
+let map=new Map()
 document.addEventListener("keydown", (event) => {
     const key = event.key.toLowerCase()
     if (key == "a" || key == "d" || key == "w") {
@@ -37,7 +60,7 @@ document.body.addEventListener("mousemove", (event) => {
     let dy = ey - cy
     angle = Math.atan2(dy, dx)
 })
-function Player1move() {
+function player1Move() {
     if (player.lastKey === "w" && keys["w"]) {
         player.directions.y = -3
     }
@@ -48,7 +71,7 @@ function Player1move() {
         player.directions.x = 1
     }
 }
-function Player2move() {
+function player2Move() {
     if (player2.lastKey == "arrowup" && keys["arrowup"]) {
         player2.directions.y = -3
     }
@@ -96,13 +119,19 @@ document.addEventListener("keyup", (event) => {
     }
 
 })
+function obstacleCollision(){
+    if(map.top<player.bottom&&map.right>=player.left&&map.left<=player.right&&map.top>player.top&&map.top+5>player.bottom){
+        player.directions.y=0
+    }
+}
 function gameloop() {
     requestAnimationFrame(gameloop)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     cx = (player.left + player.right) / 2
     cy = (player.top + player.bottom) / 2
-    Player1move()
-    Player2move()
+    enemyMove()
+    player1Move()
+    player2Move()
     player.update()
     player.draw(ctx)
     if (mouseactive) { 
@@ -111,6 +140,8 @@ function gameloop() {
     else {
         gun.draw(ctx, cx, cy, 0)
     }
+    obstacleCollision() 
+    map.draw(ctx)
     // player2.update()
     // player2.draw(ctx)
 
