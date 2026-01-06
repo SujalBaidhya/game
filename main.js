@@ -4,63 +4,71 @@ import Guns from "./guns.js"
 import Bullet from "./bullets.js"
 import Map from "./map1.js"
 import Enemy from "./enemy.js"
+import Sword from "./sword.js"
 const canvas = document.getElementById("canvas")
 const ctx = canvas.getContext("2d")
 canvas.height = window.innerHeight - 5
 canvas.width = window.innerWidth
 let player = new Player1()
 let gun = new Guns()
-let player2 = new Player2()
+
 let keys = {}
-let enemy=[]
-enemy[0]=new Enemy()
-function enemyMove(){
-    for(let i=enemy.length-1;i>=0;i--){
-        enemy[i].draw(ctx)
-        enemy[i].update()
-        if(enemy[i].left>player.left){
-            enemy[i].directions.x=-1
-        }
-        if(enemy[i].right<player.right){
-            enemy[i].directions.x=1
-        }
-        if(enemy[i].bottom<player.top){
-            enemy[i].directions.y=1
-        }
-        if(enemy[i].top>player.bottom){
-            enemy[i].directions.y=-1
-        }
-    }
-}
+let enemy = []
+let gap = 100
+let map = [new Map(100, 500, 100, 50),
+new Map(500, 50, 100, 50),
+new Map(0, canvas.height - 200, canvas.width, 50),
+]
+enemy[0] = new Enemy()
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
 let ey = cy
 let angle = 0
+let sword = new Sword(player.position.x, player.position.y, angle)
 let mouseactive = false
-let map=new Map()
+
 document.addEventListener("keydown", (event) => {
     const key = event.key.toLowerCase()
     if (key == "a" || key == "d" || key == "w") {
         player.lastKey = key
         keys[key] = true
     }
-    if (key == "arrowleft" || key == "arrowright" || key == "arrowup") {
-        event.preventDefault()
-        player2.lastKey = key
-        keys[key] = true
-    }
 })
 document.body.addEventListener("mousemove", (event) => {
     mouseactive = true
-   const rect = canvas.getBoundingClientRect()
+    const rect = canvas.getBoundingClientRect()
     ex = event.clientX - rect.left
     ey = event.clientY - rect.top
     let dx = ex - cx
     let dy = ey - cy
-    angle = Math.atan2(dy, dx)
+    if (player.primary == "gun") { 
+        player.facing = (ex >= cx) ? 1 : -1;
+        angle = Math.atan2(dy, dx) }
+    else {
+        player.facing = (ex >= cx) ? 1 : -1;
+    }
 })
-function player1Move() {
+document.body.addEventListener("click", () => {
+    if (player.primary == "sword") {
+        sword.attack()
+    }
+})
+function weapon() {
+    if (player.primary == "gun") {
+        if (mouseactive) {
+            gun.draw(ctx, cx, cy, angle)
+        }
+        else {
+            gun.draw(ctx, cx, cy, 0)
+        }
+    }
+    else if(player.primary=="sword"){
+        sword.update(player.facing)
+        sword.draw(ctx, cx, cy, player.facing)
+    }
+}
+function playerMove() {
     if (player.lastKey === "w" && keys["w"]) {
         player.directions.y = -3
     }
@@ -71,22 +79,9 @@ function player1Move() {
         player.directions.x = 1
     }
 }
-function player2Move() {
-    if (player2.lastKey == "arrowup" && keys["arrowup"]) {
-        player2.directions.y = -3
-    }
-    if (player2.lastKey == "arrowleft" && keys["arrowleft"]) {
-        player2.directions.x = -1
-    }
-    if (player2.lastKey == "arrowright" && keys["arrowright"]) {
-        player2.directions.x = 1
-    }
-}
 document.addEventListener("keyup", (event) => {
     player.directions.x = 0
     player.directions.y = 0
-    player2.directions.x = 0
-    player2.directions.y = 0
     const key = event.key.toLowerCase()
     keys[key] = false
     if (key == player.lastKey) {
@@ -103,47 +98,70 @@ document.addEventListener("keyup", (event) => {
             player.lastKey = null
         }
     }
-    else if (key == player2.lastKey) {
-        if (keys["arrowup"]) {
-            player2.lastKey = "arrowup"
+})
+function obstacleCollision() {
+    for (let i = 0; i < map.length; i++) {
+        map[i].draw(ctx)
+        if (player.right >= map[i].left && player.left <= map[i].right) {
+            if (player.bottom >= map[i].top && player.prevbottom <= map[i].top) {
+                player.onTop = true
+                player.directions.y = 0
+                player.position.y = map[i].top - player.size.height
+            }
+            if (player.top <= map[i].bottom && player.prevtop >= map[i].bottom) {
+                player.position.y = map[i].bottom
+            }
         }
-        else if (keys["arrowleft"]) {
-            player2.lastKey = "arrowleft"
-        }
-        else if (keys["arrowright"]) {
-            player2.lastKey = "arrowright"
-        }
-        else {
-            player2.lastKey = null
+        if (player.bottom >= map[i].top && player.top <= map[i].bottom) {
+            if (player.right >= map[i].left && player.prevright <= map[i].left) {
+                player.position.x = map[i].left - player.size.width
+                player.directions.x = 0
+            }
+            if (player.left <= map[i].right && player.prevleft >= map[i].right) {
+                player.position.x = map[i].right
+                player.directions.x = 0
+            }
         }
     }
-
-})
-function obstacleCollision(){
-    if(map.top<player.bottom&&map.right>=player.left&&map.left<=player.right&&map.top>player.top&&map.top+5>player.bottom){
-        player.directions.y=0
+}
+function enemyMove() {
+    for (let i = enemy.length - 1; i >= 0; i--) {
+        enemy[i].draw(ctx)
+        enemy[i].update()
+        if (player.top - enemy[i].bottom > gap || enemy[i].left - player.right > gap || enemy[i].top - player.bottom > gap || player.left - enemy[i].right > gap) {
+            if (enemy[i].left > player.left) {
+                enemy[i].directions.x = -1
+            }
+            if (enemy[i].right < player.right) {
+                enemy[i].directions.x = 1
+            }
+            if (enemy[i].bottom < player.top) {
+                enemy[i].directions.y = 1
+            }
+            if (enemy[i].top > player.bottom) {
+                enemy[i].directions.y = -1
+            }
+        }
+        else {
+            enemy[i].directions.x = 0
+            enemy[i].directions.y = 0
+        }
     }
 }
 function gameloop() {
     requestAnimationFrame(gameloop)
+    player.onTop = false
     ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    enemyMove()
+    playerMove()
+    player.update()
     cx = (player.left + player.right) / 2
     cy = (player.top + player.bottom) / 2
-    enemyMove()
-    player1Move()
-    player2Move()
-    player.update()
+
+    obstacleCollision()
     player.draw(ctx)
-    if (mouseactive) { 
-        gun.draw(ctx, cx, cy, angle)
-    }
-    else {
-        gun.draw(ctx, cx, cy, 0)
-    }
-    obstacleCollision() 
-    map.draw(ctx)
-    // player2.update()
-    // player2.draw(ctx)
+        weapon()
 
 }
 gameloop()
