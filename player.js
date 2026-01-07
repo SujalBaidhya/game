@@ -1,57 +1,90 @@
-class Player1{
-    constructor(){
-        this.position={
-            x:100,
-            y:100
+class Player1 {
+    constructor() {
+        this.position = {
+            x: 100,
+            y: 600
         }
-        this.gravity=0.1
-        this.size={
-            width:50,
-            height:50
+        this.gravity = 0.1
+        this.size = {
+            width: 50,
+            height: 50
         }
-        this.directions={
-            x:0,
-            y:0
+        this.directions = {
+            x: 0,
+            y: 0
         }
-        this.speed=2
+        this.speed = 2
         this.lastKey
+        this.prevleft = 0
+        this.prevtop = 0
+        this.prevright = 0
+        this.prevbottom = 0
+        this.onTop = false
+        this.facing
+        this.primary = "gun"
+        this.secondary = null
     }
-    get left(){
+    get left() {
         return this.position.x
     }
-    get right(){
-        return this.position.x+this.size.width
+    get right() {
+        return this.position.x + this.size.width
     }
-    get top(){
+    get top() {
         return this.position.y
     }
-    get bottom(){
-        return this.position.y+this.size.height
+    get bottom() {
+        return this.position.y + this.size.height
     }
-    draw(ctx){
-        ctx.beginPath()
-        ctx.rect(this.position.x,this.position.y,this.size.width,this.size.height)
-        ctx.fill()
+
+    draw(ctx) {
+        const cx = (this.left + this.right) / 2;
+        const cy = (this.top + this.bottom) / 2;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(this.facing, 1); 
+
+        const w = this.size.width;
+        const h = this.size.height;
+
+
+        ctx.fillStyle = "red";
+        ctx.fillRect(-w / 2, -h / 2, w / 2, h);
+
+
+        ctx.fillStyle = "blue";
+        ctx.fillRect(0, -h / 2, w / 2, h);
+
+        ctx.restore();
     }
-    collide(){
-        if(this.top<0){
-            this.position.y=0
+
+    collide() {
+        if (this.top < 0) {
+            this.position.y = 0
         }
-        if(this.left<0){
-            this.position.x=0
+        if (this.left < 0) {
+            this.position.x = 0
         }
-        if(this.right>window.innerWidth){
-            this.position.x=window.innerWidth-this.size.width
+        if (this.right > window.innerWidth) {
+            this.position.x = window.innerWidth - this.size.width
+        }
+        if (this.bottom > window.innerHeight) {
+            this.position.y = window.innerHeight - this.size.height
         }
     }
-    update(){
+    update() {
+        this.prevbottom = this.bottom
+        this.prevleft = this.left
+        this.prevright = this.right
+        this.prevtop = this.top
+        this.position.x += this.directions.x * this.speed
+        this.position.y += this.directions.y * this.speed
+        if (!this.onTop) {
+            this.directions.y += this.gravity
+        }
+        else { this.directions.y = 0 }
         this.collide()
-        this.position.y+=this.directions.y*this.speed
-        this.position.x+=this.directions.x*this.speed
-        if(this.bottom+this.speed+this.directions.y+5<window.innerHeight){
-            this.directions.y+=this.gravity
-        }
-        else {this.directions.y=0}
     }
 }
 export default Player1

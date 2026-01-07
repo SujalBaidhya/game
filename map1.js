@@ -1,12 +1,12 @@
 class Map{
-    constructor(){
+    constructor(x,y,w,h){
         this.position={
-            x:100,
-            y:window.innerHeight/2
+            x:x,
+            y:y
         }
         this.size={
-            width:100,
-            height:30
+            width:w,
+            height:h
         }   
     }
     get top(){
@@ -17,6 +17,9 @@ class Map{
     }
     get right(){
         return this.position.x+this.size.width
+    }
+    get bottom(){
+        return this.position.y+this.size.height
     }
     draw(ctx){
         ctx.beginPath()

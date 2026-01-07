@@ -1,4 +1,4 @@
-// Guns=["sniper","shorty","assultrifle"]
+
 class Guns{
     constructor(){
         this.range=window.innerWidth
@@ -23,7 +23,7 @@ class Guns{
         ctx.translate(this.translate.x,this.translate.y)
         ctx.rotate(this.angle)
         ctx.rect(0,0,this.size.width,this.size.height)
-        ctx.fillStyle="red"
+        ctx.fillStyle="green"
         ctx.fill()
         ctx.restore()
     }

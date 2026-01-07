@@ -7,7 +7,7 @@ export default class Sword {
     this.attackTime = 0;
     this.attackDuration = 50;
 
-    this.defaultAngle = 0; 
+    this.defaultAngle = 0;
   }
 
   attack() {
@@ -18,7 +18,7 @@ export default class Sword {
   }
 
   update(facing) {
-    
+
     this.defaultAngle = facing === 1 ? 0 : Math.PI;
 
     if (this.isAttacking) {
@@ -30,28 +30,29 @@ export default class Sword {
   }
 
   draw(ctx, cx, cy, facing) {
-    
+
     let angle = this.defaultAngle;
 
- 
+
     if (this.isAttacking) {
       const t = this.attackTime / this.attackDuration;
-      const swingRange = Math.PI / 2; 
-      const swingStart = -Math.PI / 4; 
+      const swingRange = Math.PI / 2;
+      const swingStart = -Math.PI / 4;
 
       let swing = swingStart + t * swingRange;
 
-    
-      if (facing === -1) swing = Math.PI - swing;
+      if (facing === -1) {
+        swing = Math.PI - swing
+      };
 
       angle = swing;
     }
 
-  
+
     const x2 = cx + Math.cos(angle) * this.length;
     const y2 = cy + Math.sin(angle) * this.length;
 
-   
+
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.lineTo(x2, y2);
@@ -60,7 +61,7 @@ export default class Sword {
     ctx.lineCap = "round";
     ctx.stroke();
 
-    
+
     this.hitStart = { x: cx, y: cy };
     this.hitEnd = { x: x2, y: y2 };
   }
