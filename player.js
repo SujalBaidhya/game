@@ -1,10 +1,10 @@
 class Player1 {
     constructor() {
         this.position = {
-            x: 100,
-            y: 600
+            x: 0,
+            y: 400
         }
-        this.gravity = 0.1
+        this.gravity = 0.2
         this.size = {
             width: 50,
             height: 50
@@ -23,6 +23,7 @@ class Player1 {
         this.facing
         this.primary = "gun"
         this.secondary = null
+        this.isjumping=false
     }
     get left() {
         return this.position.x
@@ -66,11 +67,11 @@ class Player1 {
         if (this.left < 0) {
             this.position.x = 0
         }
-        if (this.right > window.innerWidth) {
-            this.position.x = window.innerWidth - this.size.width
+        if (this.right > 3000) {
+            this.position.x = 3000 - this.size.width
         }
-        if (this.bottom > window.innerHeight) {
-            this.position.y = window.innerHeight - this.size.height
+        if (this.bottom > 1000) {
+            this.position.y = 1000 - this.size.height
         }
     }
     update() {

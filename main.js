@@ -5,19 +5,26 @@ import Bullet from "./bullets.js"
 import Map from "./map1.js"
 import Enemy from "./enemy.js"
 import Sword from "./sword.js"
+const world = {
+    width: 3000,
+    height: 1000
+}
 const canvas = document.getElementById("canvas")
 const ctx = canvas.getContext("2d")
-canvas.height = window.innerHeight - 5
-canvas.width = window.innerWidth
+const view = {
+    x: 0,
+    y: 0
+}
+canvas.width = 800
+canvas.height = 500
 let player = new Player1()
 let gun = new Guns()
-
 let keys = {}
 let enemy = []
 let gap = 100
-let map = [new Map(100, 500, 100, 50),
+let map = [new Map(100, 200, 100, 50),
 new Map(500, 50, 100, 50),
-new Map(0, canvas.height - 200, canvas.width, 50),
+new Map(0, canvas.height - 10, world.width, 50),
 ]
 enemy[0] = new Enemy()
 let cx = (player.left + player.right) / 2
@@ -27,7 +34,7 @@ let ey = cy
 let angle = 0
 let sword = new Sword(player.position.x, player.position.y, angle)
 let mouseactive = false
-
+const zoom = 0.7;
 document.addEventListener("keydown", (event) => {
     const key = event.key.toLowerCase()
     if (key == "a" || key == "d" || key == "w") {
@@ -35,18 +42,21 @@ document.addEventListener("keydown", (event) => {
         keys[key] = true
     }
 })
-document.body.addEventListener("mousemove", (event) => {
+canvas.addEventListener("mousemove", (event) => {
     mouseactive = true
     const rect = canvas.getBoundingClientRect()
     ex = event.clientX - rect.left
     ey = event.clientY - rect.top
-    let dx = ex - cx
-    let dy = ey - cy
     if (player.primary == "gun") { 
         player.facing = (ex >= cx) ? 1 : -1;
-        angle = Math.atan2(dy, dx) }
+        angle = Math.atan2(ey - cy,ex - cx) }
     else {
         player.facing = (ex >= cx) ? 1 : -1;
+    }
+})
+document.body.addEventListener("click", () => {
+    if (player.primary == "sword") {
+        sword.attack()
     }
 })
 document.body.addEventListener("click", () => {
@@ -63,14 +73,16 @@ function weapon() {
             gun.draw(ctx, cx, cy, 0)
         }
     }
-    else if(player.primary=="sword"){
+    else if (player.primary == "sword") {
         sword.update(player.facing)
         sword.draw(ctx, cx, cy, player.facing)
     }
 }
 function playerMove() {
-    if (player.lastKey === "w" && keys["w"]) {
-        player.directions.y = -3
+    if (player.lastKey === "w" && keys["w"] && player.onTop && !player.isjumping) {
+        player.directions.y = -6.5
+        player.onTop = false
+        player.isjumping = true
     }
     if (player.lastKey === "a" && keys["a"]) {
         player.directions.x = -1
@@ -105,6 +117,7 @@ function obstacleCollision() {
         if (player.right >= map[i].left && player.left <= map[i].right) {
             if (player.bottom >= map[i].top && player.prevbottom <= map[i].top) {
                 player.onTop = true
+                player.isjumping = false
                 player.directions.y = 0
                 player.position.y = map[i].top - player.size.height
             }
@@ -148,20 +161,60 @@ function enemyMove() {
         }
     }
 }
+function show() {
+    ctx.fillStyle = "brown";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+ ctx.scale(zoom, zoom);
+    ctx.translate(-view.x, -view.y);
+   
+    for (const p of map) {
+        p.draw(ctx);
+    }
+
+   
+    for (const e of enemy) {
+        e.draw(ctx);
+    }
+
+
+    player.draw(ctx);
+    weapon();
+
+    ctx.restore();
+}
+
 function gameloop() {
-    requestAnimationFrame(gameloop)
-    player.onTop = false
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    requestAnimationFrame(gameloop);
 
-    enemyMove()
-    playerMove()
-    player.update()
-    cx = (player.left + player.right) / 2
-    cy = (player.top + player.bottom) / 2
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    obstacleCollision()
-    player.draw(ctx)
-        weapon()
+    player.onTop = false;
+
+    // enemyMove();
+    obstacleCollision();
+    playerMove();
+    player.update();
+
+    cx = (player.left + player.right) / 2;
+    cy = (player.top + player.bottom) / 2;
+
+    const lerp = 0.01;
+
+let camX = player.position.x + player.size.width / 2 - (canvas.width / 2) / zoom;
+let camY = player.position.y + player.size.height / 2 - (canvas.height / 2) / zoom;
+
+
+view.x += (camX - view.x) * lerp;
+view.y += (camY - view.y) * lerp;
+
+
+if (view.x < 0) view.x = 0;
+if (view.y < 0) view.y = 0;
+if (view.x + canvas.width / zoom > world.width) view.x = world.width - canvas.width / zoom;
+if (view.y + canvas.height / zoom > world.height) view.y = world.height - canvas.height / zoom;
+    show();
 
 }
 gameloop()
