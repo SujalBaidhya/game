@@ -45,8 +45,8 @@ document.addEventListener("keydown", (event) => {
 canvas.addEventListener("mousemove", (event) => {
     mouseactive = true
     const rect = canvas.getBoundingClientRect()
-    ex = event.clientX - rect.left
-    ey = event.clientY - rect.top
+    ex = event.clientX - rect.left/zoom + view.x;
+    ey = event.clientY - rect.top/zoom + view.y;
     if (player.primary == "gun") { 
         player.facing = (ex >= cx) ? 1 : -1;
         angle = Math.atan2(ey - cy,ex - cx) }

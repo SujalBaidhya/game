@@ -23,8 +23,9 @@ class Map{
     }
     draw(ctx){
         ctx.beginPath()
-        ctx.fillRect(this.position.x,this.position.y,this.size.width,this.size.height)
-        // ctx.closPath()
+        ctx.rect(this.position.x,this.position.y,this.size.width,this.size.height)
+        ctx.fillStyle="pink"
+        ctx.fill()
     }
     
 }
