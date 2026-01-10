@@ -59,11 +59,6 @@ document.body.addEventListener("click", () => {
         sword.attack()
     }
 })
-document.body.addEventListener("click", () => {
-    if (player.primary == "sword") {
-        sword.attack()
-    }
-})
 function weapon() {
     if (player.primary == "gun") {
         if (mouseactive) {
@@ -93,7 +88,7 @@ function playerMove() {
 }
 document.addEventListener("keyup", (event) => {
     player.directions.x = 0
-    player.directions.y = 0
+    // player.directions.y = 0
     const key = event.key.toLowerCase()
     keys[key] = false
     if (key == player.lastKey) {
