@@ -34,6 +34,7 @@ let ey = cy
 let angle = 0
 let sword = new Sword(player.position.x, player.position.y, angle)
 let mouseactive = false
+let bullets=[]
 const zoom = 0.7;
 document.addEventListener("keydown", (event) => {
     const key = event.key.toLowerCase()
@@ -58,6 +59,9 @@ document.body.addEventListener("click", () => {
     if (player.primary == "sword") {
         sword.attack()
     }
+    else if(player.primary=="gun"){
+        bullets.push(new Bullet(cx,cy,player.facing))
+    }
 })
 function weapon() {
     if (player.primary == "gun") {
@@ -66,6 +70,10 @@ function weapon() {
         }
         else {
             gun.draw(ctx, cx, cy, 0)
+        }
+        for(var i=0;i<bullets.length;i++){
+            bullets[i].update()
+            bullets[i].draw(ctx,cx,cy)
         }
     }
     else if (player.primary == "sword") {
@@ -88,7 +96,6 @@ function playerMove() {
 }
 document.addEventListener("keyup", (event) => {
     player.directions.x = 0
-    // player.directions.y = 0
     const key = event.key.toLowerCase()
     keys[key] = false
     if (key == player.lastKey) {
@@ -159,27 +166,20 @@ function enemyMove() {
 function show() {
     ctx.fillStyle = "brown";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     ctx.save();
- ctx.scale(zoom, zoom);
+    ctx.scale(zoom, zoom);
     ctx.translate(-view.x, -view.y);
-   
     for (const p of map) {
         p.draw(ctx);
     }
-
-   
     for (const e of enemy) {
         e.draw(ctx);
     }
-
-
     player.draw(ctx);
     weapon();
 
     ctx.restore();
 }
-
 function gameloop() {
     requestAnimationFrame(gameloop);
 
@@ -197,19 +197,19 @@ function gameloop() {
 
     const lerp = 0.01;
 
-let camX = player.position.x + player.size.width / 2 - (canvas.width / 2) / zoom;
-let camY = player.position.y + player.size.height / 2 - (canvas.height / 2) / zoom;
+    let x = player.position.x + player.size.width / 2 - (canvas.width / 2) / zoom;
+    let y = player.position.y + player.size.height / 2 - (canvas.height / 2) / zoom;
 
 
-view.x += (camX - view.x) * lerp;
-view.y += (camY - view.y) * lerp;
+    view.x += (x - view.x) * lerp;
+    view.y += (y - view.y) * lerp;
 
 
-if (view.x < 0) view.x = 0;
-if (view.y < 0) view.y = 0;
-if (view.x + canvas.width / zoom > world.width) view.x = world.width - canvas.width / zoom;
-if (view.y + canvas.height / zoom > world.height) view.y = world.height - canvas.height / zoom;
-    show();
+    if (view.x < 0) view.x = 0;
+    if (view.y < 0) view.y = 0;
+    if (view.x + canvas.width / zoom > world.width) view.x = world.width - canvas.width / zoom;
+    if (view.y + canvas.height / zoom > world.height) view.y = world.height - canvas.height / zoom;
+        show();
 
 }
 gameloop()
