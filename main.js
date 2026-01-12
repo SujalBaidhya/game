@@ -60,7 +60,7 @@ document.body.addEventListener("click", () => {
         sword.attack()
     }
     else if(player.primary=="gun"){
-        bullets.push(new Bullet(cx,cy,player.facing))
+        bullets.push(new Bullet(cx+(player.facing*gun.size.width),cy,player.facing))
     }
 })
 function weapon() {
@@ -73,12 +73,12 @@ function weapon() {
         }
         for(var i=0;i<bullets.length;i++){
             bullets[i].update()
-            bullets[i].draw(ctx,cx,cy)
+            bullets[i].draw(ctx)
         }
     }
     else if (player.primary == "sword") {
         sword.update(player.facing)
-        sword.draw(ctx, cx, cy, player.facing)
+        sword.draw(ctx)
     }
 }
 function playerMove() {

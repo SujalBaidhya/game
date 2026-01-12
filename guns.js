@@ -7,7 +7,6 @@ class Guns{
             width:50,
             height:10
         }
-        // this.bulletSpread=0
         this.angle=0
         this.translate={
             x:0,
