@@ -34,7 +34,7 @@ let ey = cy
 let angle = 0
 let sword = new Sword(player.position.x, player.position.y, angle)
 let mouseactive = false
-let bullets=[]
+let bullets = []
 const zoom = 0.7;
 document.addEventListener("keydown", (event) => {
     const key = event.key.toLowerCase()
@@ -46,11 +46,12 @@ document.addEventListener("keydown", (event) => {
 canvas.addEventListener("mousemove", (event) => {
     mouseactive = true
     const rect = canvas.getBoundingClientRect()
-    ex = event.clientX - rect.left/zoom + view.x;
-    ey = event.clientY - rect.top/zoom + view.y;
-    if (player.primary == "gun") { 
+    ex = event.clientX - rect.left / zoom + view.x;
+    ey = event.clientY - rect.top / zoom + view.y;
+    if (player.primary == "gun") {
         player.facing = (ex >= cx) ? 1 : -1;
-        angle = Math.atan2(ey - cy,ex - cx) }
+        angle = Math.atan2(ey - cy, ex - cx)
+    }
     else {
         player.facing = (ex >= cx) ? 1 : -1;
     }
@@ -59,8 +60,11 @@ document.body.addEventListener("click", () => {
     if (player.primary == "sword") {
         sword.attack()
     }
-    else if(player.primary=="gun"){
-        bullets.push(new Bullet(cx+(player.facing*gun.size.width),cy,player.facing))
+    else if (player.primary == "gun") {
+        const tipX = cx + Math.cos(angle) * gun.size.width//gives x position of angle
+        const tipY = cy + Math.sin(angle) * gun.size.width//gives y position of angle
+
+        bullets.push(new Bullet(tipX, tipY, player.facing))
     }
 })
 function weapon() {
@@ -71,7 +75,7 @@ function weapon() {
         else {
             gun.draw(ctx, cx, cy, 0)
         }
-        for(var i=0;i<bullets.length;i++){
+        for (var i = 0; i < bullets.length; i++) {
             bullets[i].update()
             bullets[i].draw(ctx)
         }
@@ -209,7 +213,7 @@ function gameloop() {
     if (view.y < 0) view.y = 0;
     if (view.x + canvas.width / zoom > world.width) view.x = world.width - canvas.width / zoom;
     if (view.y + canvas.height / zoom > world.height) view.y = world.height - canvas.height / zoom;
-        show();
+    show();
 
 }
 gameloop()
