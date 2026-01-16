@@ -11,6 +11,7 @@ class Bullet{
         this.hitStatus=false
         this.speed=3
         this.direction=d
+        this.gravity=0.25
     }
     draw(ctx){
         ctx.beginPath()
@@ -20,6 +21,7 @@ class Bullet{
     }
     update(){
         this.position.x+=this.speed*this.direction
+        this.position.y+this.gravity
     }
 }
 export default Bullet

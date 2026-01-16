@@ -83,6 +83,9 @@ class Player1 {
         this.position.y += this.directions.y * this.speed
         if (!this.onTop) {
             this.directions.y += this.gravity
+            if(this.directions.y>8){
+                this.directions.y=8
+            }
         }
         else { this.directions.y = 0 }
         this.collide()

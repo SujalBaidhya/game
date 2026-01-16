@@ -1,5 +1,4 @@
 import Player1 from "./player.js"
-import Player2 from "./player2.js"
 import Guns from "./guns.js"
 import Bullet from "./bullets.js"
 import Map from "./map1.js"
@@ -61,9 +60,9 @@ document.body.addEventListener("click", () => {
         sword.attack()
     }
     else if (player.primary == "gun") {
-        const tipX = cx + Math.cos(angle) * gun.size.width//gives x position of angle
-        const tipY = cy + Math.sin(angle) * gun.size.width//gives y position of angle
-        bullets.push(new Bullet(tipX, tipY, player.facing))
+        const x = cx + Math.cos(angle) * gun.size.width//x point direction ratio of the angle 
+        const y = cy + Math.sin(angle) * gun.size.width//y point direction ratio of angle
+        bullets.push(new Bullet(x, y, player.facing))
     }
 })
 function weapon() {
@@ -86,7 +85,13 @@ function weapon() {
 }
 function playerMove() {
     if (player.lastKey === "w" && keys["w"] && player.onTop && !player.isjumping) {
-        player.directions.y = -6.5
+        player.directions.y = -8
+        if(keys["a"]){
+            player.directions.x=-3
+        }
+        if(keys["d"]){
+            player.directions.x=3
+        }
         player.onTop = false
         player.isjumping = true
     }
