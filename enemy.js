@@ -1,18 +1,24 @@
 class Enemy{
-    constructor(){
+    constructor(x,y,top,left,bottom,right){
         this.position={
-            x:Math.random()*window.innerWidth,
-            y:10
+            x:x,
+            y:y
         }
         this.size={
             width:20,
             height:20
         }
         this.directions={
-            x:0,
-            y:1
+            x:1,
+            y:0
         }
         this.speed=1
+        this.max={
+            top:top,
+            left:left,
+            right:right,
+            bottom:bottom
+        }
     }
     get top(){
         return this.position.y

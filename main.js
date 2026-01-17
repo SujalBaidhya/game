@@ -25,7 +25,7 @@ let map = [new Map(100, 200, 100, 50),
 new Map(500, 50, 100, 50),
 new Map(0, canvas.height - 10, world.width, 50),
 ]
-enemy[0] = new Enemy()
+enemy[0] = new Enemy(50,50,0,0,700,300)
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
@@ -181,11 +181,10 @@ function show() {
         p.draw(ctx);
     }
     for (const e of enemy) {
-        e.draw(ctx);
+        e.update();
     }
     player.draw(ctx);
     weapon();
-
     ctx.restore();
 }
 function gameloop() {
@@ -195,7 +194,7 @@ function gameloop() {
 
     player.onTop = false;
 
-    // enemyMove();
+    enemyMove();
     obstacleCollision();
     playerMove();
     player.update();
