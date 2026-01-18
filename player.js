@@ -4,7 +4,7 @@ class Player1 {
             x: 0,
             y: 400
         }
-        this.gravity = 0.2
+        this.gravity = 0.1
         this.size = {
             width: 50,
             height: 50

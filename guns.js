@@ -1,4 +1,3 @@
-
 class Guns{
     constructor(){
         this.range=window.innerWidth

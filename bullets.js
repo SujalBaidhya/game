@@ -1,5 +1,5 @@
 class Bullet{
-    constructor(x,y,d){
+    constructor(x,y,angle){
         this.size={
         width:10,
         height:10
@@ -9,9 +9,24 @@ class Bullet{
             y:y
         }
         this.hitStatus=false
-        this.speed=3
-        this.direction=d
-        this.gravity=0.25
+        this.speed=2
+        this.direction={
+            x:Math.cos(angle)*this.speed,
+            y:Math.sin(angle)*this.speed
+        }
+        this.gravity=0.02
+    }
+    get top(){
+        return this.position.y
+    }
+    get left(){
+        return this.position.x
+    }
+    get right(){
+        return this.position.x+this.size.width
+    }
+    get bottom(){
+        return this.position.y+this.size.height
     }
     draw(ctx){
         ctx.beginPath()
@@ -20,8 +35,9 @@ class Bullet{
         ctx.fill()
     }
     update(){
-        this.position.x+=this.speed*this.direction
-        this.position.y+this.gravity
+        this.position.x+=this.speed*this.direction.x
+        this.direction.y+=this.gravity
+        this.position.y+=this.direction.y
     }
 }
 export default Bullet

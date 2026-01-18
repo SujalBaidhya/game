@@ -15,7 +15,7 @@ const view = {
     y: 0
 }
 canvas.width = 800
-canvas.height = 500
+canvas.height = 700
 let player = new Player1()
 let gun = new Guns()
 let keys = {}
@@ -62,7 +62,7 @@ document.body.addEventListener("click", () => {
     else if (player.primary == "gun") {
         const x = cx + Math.cos(angle) * gun.size.width//x point direction ratio of the angle 
         const y = cy + Math.sin(angle) * gun.size.width//y point direction ratio of angle
-        bullets.push(new Bullet(x, y, player.facing))
+        bullets.push(new Bullet(x, y, angle))
     }
 })
 function weapon() {
@@ -76,6 +76,9 @@ function weapon() {
         for (var i = 0; i < bullets.length; i++) {
             bullets[i].update()
             bullets[i].draw(ctx)
+            if(bullets[i].right>view.x+canvas.width/zoom||bullets[i].left<view.x||bullets[i].top<view.y||bullets[i].bottom>view.y+canvas.height/zoom){
+                bullets.splice(i,1)
+            }
         }
     }
     else if (player.primary == "sword") {
@@ -85,12 +88,12 @@ function weapon() {
 }
 function playerMove() {
     if (player.lastKey === "w" && keys["w"] && player.onTop && !player.isjumping) {
-        player.directions.y = -8
+        player.directions.y = -6
         if(keys["a"]){
-            player.directions.x=-3
+            player.directions.x=-1
         }
         if(keys["d"]){
-            player.directions.x=3
+            player.directions.x=1.5
         }
         player.onTop = false
         player.isjumping = true
@@ -189,29 +192,19 @@ function show() {
 }
 function gameloop() {
     requestAnimationFrame(gameloop);
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     player.onTop = false;
-
     enemyMove();
     obstacleCollision();
     playerMove();
     player.update();
-
     cx = (player.left + player.right) / 2;
     cy = (player.top + player.bottom) / 2;
-
     const lerp = 0.01;
-
     let x = player.position.x + player.size.width / 2 - (canvas.width / 2) / zoom;
     let y = player.position.y + player.size.height / 2 - (canvas.height / 2) / zoom;
-
-
     view.x += (x - view.x) * lerp;
     view.y += (y - view.y) * lerp;
-
-
     if (view.x < 0) view.x = 0;
     if (view.y < 0) view.y = 0;
     if (view.x + canvas.width / zoom > world.width) view.x = world.width - canvas.width / zoom;
