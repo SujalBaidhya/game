@@ -1,5 +1,6 @@
+import Sword from "./sword"
 class Enemy{
-    constructor(x,y,top,left,bottom,right){
+    constructor(x,y,top,left,bottom,right,type){
         this.position={
             x:x,
             y:y
@@ -19,6 +20,8 @@ class Enemy{
             right:right,
             bottom:bottom
         }
+        this.type=type
+        this.weapon
     }
     get top(){
         return this.position.y
@@ -39,6 +42,12 @@ class Enemy{
     update(){
         this.position.x+=this.speed*this.directions.x
         this.position.y+=this.speed*this.directions.y
+    }
+    attack(ctx,){
+            if(this.type=="sword"){
+                this.weapon=new Sword()
+                sword.draw(ctx,this.position.x+this.size.width/2,this.position.y+this.size.height/2,)
+            }
     }
 }
 export default Enemy

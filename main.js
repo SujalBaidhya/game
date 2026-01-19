@@ -25,7 +25,7 @@ let map = [new Map(100, 200, 100, 50),
 new Map(500, 50, 100, 50),
 new Map(0, canvas.height - 10, world.width, 50),
 ]
-enemy[0] = new Enemy(50,50,0,0,700,300)
+enemy[0] = new Enemy(50, 50, 0, 0, 700, 300,sword)
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
@@ -65,6 +65,16 @@ document.body.addEventListener("click", () => {
         bullets.push(new Bullet(x, y, angle))
     }
 })
+function bulletCollision() {
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        for (const m of map) {
+            if (bullets[i].top > m.top && bullets[i].right > m.left && bullets[i].left < m.right && bullets[i].top <= m.bottom) {
+                bullets.splice(i, 1)
+                break
+            }
+        }
+    }
+}
 function weapon() {
     if (player.primary == "gun") {
         if (mouseactive) {
@@ -76,24 +86,24 @@ function weapon() {
         for (var i = 0; i < bullets.length; i++) {
             bullets[i].update()
             bullets[i].draw(ctx)
-            if(bullets[i].right>view.x+canvas.width/zoom||bullets[i].left<view.x||bullets[i].top<view.y||bullets[i].bottom>view.y+canvas.height/zoom){
-                bullets.splice(i,1)
+            if (bullets[i].right > view.x + canvas.width / zoom || bullets[i].left < view.x || bullets[i].top < view.y || bullets[i].bottom > view.y + canvas.height / zoom) {
+                bullets.splice(i, 1)
             }
         }
     }
     else if (player.primary == "sword") {
         sword.update(player.facing)
-        sword.draw(ctx)
+        sword.draw(ctx,cx,cy,player.facing)
     }
 }
 function playerMove() {
     if (player.lastKey === "w" && keys["w"] && player.onTop && !player.isjumping) {
         player.directions.y = -6
-        if(keys["a"]){
-            player.directions.x=-1
+        if (keys["a"]) {
+            player.directions.x = -1
         }
-        if(keys["d"]){
-            player.directions.x=1.5
+        if (keys["d"]) {
+            player.directions.x = 1.5
         }
         player.onTop = false
         player.isjumping = true
@@ -171,6 +181,7 @@ function enemyMove() {
         else {
             enemy[i].directions.x = 0
             enemy[i].directions.y = 0
+            enemy[i].attack()
         }
     }
 }
@@ -196,6 +207,7 @@ function gameloop() {
     player.onTop = false;
     enemyMove();
     obstacleCollision();
+    bulletCollision();
     playerMove();
     player.update();
     cx = (player.left + player.right) / 2;
