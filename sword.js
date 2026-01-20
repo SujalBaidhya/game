@@ -1,4 +1,4 @@
-export default class Sword {
+class Sword {
   constructor() {
     this.length = 50;
     this.width = 5;
@@ -6,6 +6,12 @@ export default class Sword {
     this.attackTime = 0;
     this.attackDuration = 50;
     this.defaultAngle = 0;
+    this.hitbox={
+      x:0,
+      y:0,
+      width:this.length,
+      length:this.width,
+    }
   }
   attack() {
     if (!this.isAttacking) {
@@ -39,13 +45,14 @@ export default class Sword {
       };
       angle = swing;
     }
-    const x2 = cx + Math.cos(angle) * this.length;
-    const y2 = cy + Math.sin(angle) * this.length;
+    this.hitbox.x = cx + Math.cos(angle) * this.length;
+    this.hitbox.y = cy + Math.sin(angle) * this.length;
     ctx.beginPath();
     ctx.moveTo(cx, cy);
-    ctx.lineTo(x2, y2);
+    ctx.lineTo(this.hitbox.x, this.hitbox.y);
     ctx.strokeStyle = "yellow";
     ctx.lineWidth = this.width;
     ctx.stroke();
   }
 }
+export default Sword

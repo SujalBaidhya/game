@@ -14,7 +14,7 @@ class Bullet{
             x:Math.cos(angle)*this.speed,
             y:Math.sin(angle)*this.speed
         }
-        this.gravity=0.02
+        this.gravity=0.01
     }
     get top(){
         return this.position.y
@@ -36,7 +36,7 @@ class Bullet{
     }
     update(){
         this.position.x+=this.speed*this.direction.x
-        this.direction.y+=this.gravity
+        this.direction.y+=this.gravity+2
         this.position.y+=this.direction.y
     }
 }

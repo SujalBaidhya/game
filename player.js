@@ -21,7 +21,7 @@ class Player1 {
         this.prevbottom = 0
         this.onTop = false
         this.facing
-        this.primary ="sword"
+        this.primary ="gun"
         this.secondary = null
         this.isjumping=false
     }

@@ -15,7 +15,7 @@ const view = {
     y: 0
 }
 canvas.width = 800
-canvas.height = 700
+canvas.height = 500
 let player = new Player1()
 let gun = new Guns()
 let keys = {}
@@ -24,8 +24,8 @@ let gap = 100
 let map = [new Map(100, 200, 100, 50),
 new Map(500, 50, 100, 50),
 new Map(0, canvas.height - 10, world.width, 50),
-]
-enemy[0] = new Enemy(50, 50, 0, 0, 700, 300,sword)
+]   
+enemy[0] = new Enemy(0, canvas.height-40, "sword")
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
@@ -34,6 +34,7 @@ let angle = 0
 let sword = new Sword(player.position.x, player.position.y, angle)
 let mouseactive = false
 let bullets = []
+let ebullets=[]
 const zoom = 0.7;
 document.addEventListener("keydown", (event) => {
     const key = event.key.toLowerCase()
@@ -162,7 +163,12 @@ function obstacleCollision() {
 }
 function enemyMove() {
     for (let i = enemy.length - 1; i >= 0; i--) {
-        enemy[i].draw(ctx)
+        if(player.left>=enemy[i].right){
+            enemy[i].facing=1
+        }
+        if(player.right<enemy[i].left){
+            enemy[i].facing=-1
+        }
         enemy[i].update()
         if (player.top - enemy[i].bottom > gap || enemy[i].left - player.right > gap || enemy[i].top - player.bottom > gap || player.left - enemy[i].right > gap) {
             if (enemy[i].left > player.left) {
@@ -171,12 +177,12 @@ function enemyMove() {
             if (enemy[i].right < player.right) {
                 enemy[i].directions.x = 1
             }
-            if (enemy[i].bottom < player.top) {
-                enemy[i].directions.y = 1
-            }
-            if (enemy[i].top > player.bottom) {
-                enemy[i].directions.y = -1
-            }
+            // if (enemy[i].bottom < player.top) {
+            //     enemy[i].directions.y = 1
+            // }
+            // if (enemy[i].top > player.bottom) {
+            //     enemy[i].directions.y = -1
+            // }
         }
         else {
             enemy[i].directions.x = 0
@@ -195,7 +201,7 @@ function show() {
         p.draw(ctx);
     }
     for (const e of enemy) {
-        e.update();
+        e.draw(ctx);
     }
     player.draw(ctx);
     weapon();
@@ -205,10 +211,10 @@ function gameloop() {
     requestAnimationFrame(gameloop);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     player.onTop = false;
-    enemyMove();
     obstacleCollision();
     bulletCollision();
     playerMove();
+    enemyMove();
     player.update();
     cx = (player.left + player.right) / 2;
     cy = (player.top + player.bottom) / 2;
@@ -225,3 +231,4 @@ function gameloop() {
 
 }
 gameloop()
+setInterval(function(){ebullets.push(new Bullet())},500)
