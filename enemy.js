@@ -16,16 +16,17 @@ class Enemy{
             y:0
         }
         this.speed=1
-        // this.max={
-        //     top:top,
-        //     left:left,
-        //     right:right,
-        //     bottom:bottom
-        // }
+        this.max={
+            top:top,
+            left:left,
+            right:right,
+            bottom:bottom
+        }
         this.type=type
         if(this.type=="sword"){this.weapon=new Sword()}
         if(this.type=="gun"){this.weapon=new Guns()}
         this.facing
+        this.alive=true
     }
     get top(){
         return this.position.y
@@ -53,6 +54,30 @@ class Enemy{
         else if(this.type=="gun"){  
             const angle=Math.atan2(cy-this.position.y/cx-this.position.x)
             this.weapon.draw(ctx,(this.left+this.right)/2,(this.top+this.bottom)/2,angle)
+        }
+    }
+    shoot(player,ebullets){
+        if(this.type=="gun"&&this.alive){
+            if (
+                this.right < this.max.left ||
+                this.left > this.max.right ||
+                this.bottom < this.max.top ||
+                this.top > this.max.bottom
+            ) {
+                return;
+            }
+
+            if(player.left>this.max.left&&player.right<this.max.right&&player.top>this.max.top&&player.bottom<this.max.bottom){
+                const now = Date.now();
+                if (now - this.lastShot < this.shootDelay) return;
+                const cx = (this.left + this.right) / 2;
+                const cy = (this.top + this.bottom) / 2;
+                const px = (player.left + player.right) / 2;
+                const py = (player.top + player.bottom) / 2;
+                const angle = Math.atan2(py - cy, px - cx);
+                ebullets.push(new Bullet(cx,cy,angle))
+                this.lastShot = now;
+            }
         }
     }
     update(){
