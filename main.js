@@ -97,6 +97,64 @@ function weapon() {
         sword.draw(ctx,cx,cy,player.facing)
     }
 }
+function enemyMove() {
+    const camera= {
+        left: view.x,
+        right: view.x + canvas.width / zoom,
+        top: view.y,
+        bottom: view.y + canvas.height / zoom
+    };
+    for (let i = enemy.length - 1; i >= 0; i--) {
+        if(player.left>=enemy[i].right){
+            enemy[i].facing=1
+        }
+        if(player.right<enemy[i].left){
+            enemy[i].facing=-1
+        }
+        
+        if (player.top - enemy[i].bottom > gap || enemy[i].left - player.right > gap || enemy[i].top - player.bottom > gap || player.left - enemy[i].right > gap) {
+            if (enemy[i].left > player.left) {
+                enemy[i].directions.x = -1
+            }
+            if (enemy[i].right < player.right) {
+                enemy[i].directions.x = 1
+            }
+            // if (enemy[i].bottom < player.top) {
+            //     enemy[i].directions.y = 1
+            // }
+            // if (enemy[i].top > player.bottom) {
+            //     enemy[i].directions.y = -1
+            // }
+        }
+        else {
+            enemy[i].directions.x = 0
+            enemy[i].directions.y = 0
+            enemy[i].attack()
+        }
+        enemy[i].shoot(player,ebullets,camera)
+        enemy[i].update()
+    }
+}
+function enemyBullet() {
+    for (let i = ebullets.length - 1; i >= 0; i--) {
+        if (
+            ebullets[i].right < view.x ||
+            ebullets[i].left > view.x + canvas.width / zoom ||
+            ebullets[i].bottom < view.y ||
+            ebullets[i].top > view.y + canvas.height / zoom
+        ) {
+            ebullets.splice(i, 1);
+            continue;
+        }
+
+        for (const m of map) {
+            if (ebullets[i].top > m.top && ebullets[i].right > m.left && ebullets[i].left < m.right && ebullets[i].top <= m.bottom) {
+                ebullets.splice(i, 1)
+                break
+            }
+        }
+    }
+}
 function playerMove() {
     if (player.lastKey === "w" && keys["w"] && player.onTop && !player.isjumping) {
         player.directions.y = -6
@@ -161,36 +219,7 @@ function obstacleCollision() {
         }
     }
 }
-function enemyMove() {
-    for (let i = enemy.length - 1; i >= 0; i--) {
-        if(player.left>=enemy[i].right){
-            enemy[i].facing=1
-        }
-        if(player.right<enemy[i].left){
-            enemy[i].facing=-1
-        }
-        enemy[i].update()
-        if (player.top - enemy[i].bottom > gap || enemy[i].left - player.right > gap || enemy[i].top - player.bottom > gap || player.left - enemy[i].right > gap) {
-            if (enemy[i].left > player.left) {
-                enemy[i].directions.x = -1
-            }
-            if (enemy[i].right < player.right) {
-                enemy[i].directions.x = 1
-            }
-            // if (enemy[i].bottom < player.top) {
-            //     enemy[i].directions.y = 1
-            // }
-            // if (enemy[i].top > player.bottom) {
-            //     enemy[i].directions.y = -1
-            // }
-        }
-        else {
-            enemy[i].directions.x = 0
-            enemy[i].directions.y = 0
-            enemy[i].attack()
-        }
-    }
-}
+
 function show() {
     ctx.fillStyle = "brown";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -200,8 +229,11 @@ function show() {
     for (const p of map) {
         p.draw(ctx);
     }
-    for (const e of enemy) {
+    for(const e of enemy) {
         e.draw(ctx);
+    }
+    for(const b of ebullets){
+        b.draw(ctx)
     }
     player.draw(ctx);
     weapon();
@@ -215,6 +247,7 @@ function gameloop() {
     bulletCollision();
     playerMove();
     enemyMove();
+    enemyBullet()
     player.update();
     cx = (player.left + player.right) / 2;
     cy = (player.top + player.bottom) / 2;
