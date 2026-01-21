@@ -6,7 +6,7 @@ import Enemy from "./enemy.js"
 import Sword from "./sword.js"
 const world = {
     width: 3000,
-    height: 1000
+    height: 3000
 }
 const canvas = document.getElementById("canvas")
 const ctx = canvas.getContext("2d")
@@ -20,12 +20,12 @@ let player = new Player1()
 let gun = new Guns()
 let keys = {}
 let enemy = []
-let gap = 100
+let gap = 20
 let map = [new Map(100, 200, 100, 50),
-new Map(500, 50, 100, 50),
+new Map(400, 50, 100, 50),
 new Map(0, canvas.height - 10, world.width, 50),
 ]   
-enemy[0] = new Enemy(0, canvas.height-40, "sword")
+enemy[0] = new Enemy(0, 440, "gun")
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
@@ -74,6 +74,15 @@ function bulletCollision() {
                 break
             }
         }
+        for(let e= enemy.length-1;e>=0;e--){
+            if(enemy[e].right<view.x||enemy[e].bottom<view.y||enemy[e].left>view.x+canvas.width/zoom||enemy[e].top>view.y+canvas.height/zoom){
+                return
+            }
+            if(enemy[e].right>bullets[i].left&&enemy[e].left<bullets[i].right&&enemy[e].top<bullets[e].bottom&&enemy[e].bottom>bullets[i].top){
+                enemy.splice(i,1)
+                continue
+            }
+        }
     }
 }
 function weapon() {
@@ -111,7 +120,11 @@ function enemyMove() {
         if(player.right<enemy[i].left){
             enemy[i].facing=-1
         }
-        
+        if(enemy[i].type=="gun"){
+            let y=(enemy[i].top+enemy[i].bottom)/2
+            let x=(enemy[i].left+enemy[i].right)/2
+            enemy[i].angle= Math.atan2(cy-y,cx-x)
+        }
         if (player.top - enemy[i].bottom > gap || enemy[i].left - player.right > gap || enemy[i].top - player.bottom > gap || player.left - enemy[i].right > gap) {
             if (enemy[i].left > player.left) {
                 enemy[i].directions.x = -1
@@ -137,6 +150,7 @@ function enemyMove() {
 }
 function enemyBullet() {
     for (let i = ebullets.length - 1; i >= 0; i--) {
+        ebullets[i].update()
         if (
             ebullets[i].right < view.x ||
             ebullets[i].left > view.x + canvas.width / zoom ||
@@ -246,11 +260,11 @@ function gameloop() {
     obstacleCollision();
     bulletCollision();
     playerMove();
-    enemyMove();
-    enemyBullet()
     player.update();
     cx = (player.left + player.right) / 2;
     cy = (player.top + player.bottom) / 2;
+    enemyMove();
+    enemyBullet()
     const lerp = 0.01;
     let x = player.position.x + player.size.width / 2 - (canvas.width / 2) / zoom;
     let y = player.position.y + player.size.height / 2 - (canvas.height / 2) / zoom;
