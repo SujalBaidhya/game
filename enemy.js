@@ -16,6 +16,10 @@ class Enemy{
             y:0
         }
         this.speed=1
+        this.prevleft = 0
+        this.prevtop = 0
+        this.prevright = 0
+        this.prevbottom = 0
         // this.max={
         //     top:top,
         //     left:left,
@@ -84,6 +88,10 @@ class Enemy{
         }
     }
     update(){
+        this.prevbottom = this.bottom
+        this.prevleft = this.left
+        this.prevright = this.right
+        this.prevtop = this.top
         this.position.x+=this.speed*this.directions.x
         if(this.type=="gun"){this.position.y+=this.speed*this.directions.y}
         // if(this.left<this.max.left){

@@ -165,11 +165,17 @@ function enemyBullet() {
             ebullets.splice(i, 1);
             continue;
         }
+        if(!ebullets[i]){
+            continue
+        }
         for (const m of map) {
             if (ebullets[i].top > m.top && ebullets[i].right > m.left && ebullets[i].left < m.right && ebullets[i].top <= m.bottom) {
                 ebullets.splice(i, 1)
-                continue
+                break
             }
+        }
+        if(!ebullets[i]){
+            continue
         }
         if(player.right>ebullets[i].left&&player.left<ebullets[i].right&&player.top<ebullets[i].bottom&&player.bottom>ebullets[i].top){
             console.log("hit")
@@ -221,7 +227,7 @@ function obstacleCollision(obj) {
         map[i].draw(ctx)
         if (obj.right >= map[i].left && obj.left <= map[i].right) {
             if (obj.bottom >= map[i].top && obj.prevbottom <= map[i].top) {
-                if(obj=="player"){obj.onTop = true
+                if(obj==player){obj.onTop = true
                 obj.isjumping = false}
                 obj.directions.y = 0
                 obj.position.y = map[i].top - obj.size.height
