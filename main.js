@@ -74,14 +74,17 @@ function bulletCollision() {
                 break
             }
         }
+        if(!bullets[i]){
+            continue    
+        }
         for(let e= enemy.length-1;e>=0;e--){
             if(enemy[e].right<view.x||enemy[e].bottom<view.y||enemy[e].left>view.x+canvas.width/zoom||enemy[e].top>view.y+canvas.height/zoom){
-                return
-            }
-            if(enemy[e].right>bullets[i].left&&enemy[e].left<bullets[i].right&&enemy[e].top<bullets[e].bottom&&enemy[e].bottom>bullets[i].top){
-                enemy.splice(i,1)
-                bullets.splice(i,1)
                 continue
+            }
+            if(enemy[e].right>bullets[i].left&&enemy[e].left<bullets[i].right&&enemy[e].top<bullets[i].bottom&&enemy[e].bottom>bullets[i].top){
+                enemy.splice(e,1)
+                bullets.splice(i,1)
+                break
             }
         }
     }
@@ -133,12 +136,12 @@ function enemyMove() {
             if (enemy[i].right < player.right) {
                 enemy[i].directions.x = 1
             }
-            // if (enemy[i].bottom < player.top) {
-            //     enemy[i].directions.y = 1
-            // }
-            // if (enemy[i].top > player.bottom) {
-            //     enemy[i].directions.y = -1
-            // }
+            if (enemy[i].bottom < player.top) {
+                enemy[i].directions.y = 1
+            }
+            if (enemy[i].top > player.bottom) {
+                enemy[i].directions.y = -1
+            }
         }
         else {
             enemy[i].directions.x = 0
@@ -147,6 +150,7 @@ function enemyMove() {
         }
         enemy[i].shoot(player,ebullets,camera)
         enemy[i].update()
+        obstacleCollision(enemy[i])
     }
 }
 function enemyBullet() {
@@ -164,7 +168,7 @@ function enemyBullet() {
         for (const m of map) {
             if (ebullets[i].top > m.top && ebullets[i].right > m.left && ebullets[i].left < m.right && ebullets[i].top <= m.bottom) {
                 ebullets.splice(i, 1)
-                break
+                continue
             }
         }
         if(player.right>ebullets[i].left&&player.left<ebullets[i].right&&player.top<ebullets[i].bottom&&player.bottom>ebullets[i].top){
@@ -212,28 +216,28 @@ document.addEventListener("keyup", (event) => {
         }
     }
 })
-function obstacleCollision() {
+function obstacleCollision(obj) {
     for (let i = 0; i < map.length; i++) {
         map[i].draw(ctx)
-        if (player.right >= map[i].left && player.left <= map[i].right) {
-            if (player.bottom >= map[i].top && player.prevbottom <= map[i].top) {
-                player.onTop = true
-                player.isjumping = false
-                player.directions.y = 0
-                player.position.y = map[i].top - player.size.height
+        if (obj.right >= map[i].left && obj.left <= map[i].right) {
+            if (obj.bottom >= map[i].top && obj.prevbottom <= map[i].top) {
+                if(obj=="player"){obj.onTop = true
+                obj.isjumping = false}
+                obj.directions.y = 0
+                obj.position.y = map[i].top - obj.size.height
             }
-            if (player.top <= map[i].bottom && player.prevtop >= map[i].bottom) {
-                player.position.y = map[i].bottom
+            if (obj.top <= map[i].bottom && obj.prevtop >= map[i].bottom) {
+                obj.position.y = map[i].bottom
             }
         }
-        if (player.bottom >= map[i].top && player.top <= map[i].bottom) {
-            if (player.right >= map[i].left && player.prevright <= map[i].left) {
-                player.position.x = map[i].left - player.size.width
-                player.directions.x = 0
+        if (obj.bottom >= map[i].top && obj.top <= map[i].bottom) {
+            if (obj.right >= map[i].left && obj.prevright <= map[i].left) {
+                obj.position.x = map[i].left - obj.size.width
+                obj.directions.x = 0
             }
-            if (player.left <= map[i].right && player.prevleft >= map[i].right) {
-                player.position.x = map[i].right
-                player.directions.x = 0
+            if (obj.left <= map[i].right && obj.prevleft >= map[i].right) {
+                obj.position.x = map[i].right
+                obj.directions.x = 0
             }
         }
     }
@@ -262,7 +266,7 @@ function gameloop() {
     requestAnimationFrame(gameloop);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     player.onTop = false;
-    obstacleCollision();
+    obstacleCollision(player);
     bulletCollision();
     playerMove();
     player.update();
@@ -283,4 +287,3 @@ function gameloop() {
 
 }
 gameloop()
-setInterval(function(){ebullets.push(new Bullet())},500)

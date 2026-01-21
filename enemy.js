@@ -85,7 +85,7 @@ class Enemy{
     }
     update(){
         this.position.x+=this.speed*this.directions.x
-        this.position.y+=this.speed*this.directions.y
+        if(this.type=="gun"){this.position.y+=this.speed*this.directions.y}
         // if(this.left<this.max.left){
         //     this.position.x=this.max.left
         // }
