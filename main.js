@@ -80,6 +80,7 @@ function bulletCollision() {
             }
             if(enemy[e].right>bullets[i].left&&enemy[e].left<bullets[i].right&&enemy[e].top<bullets[e].bottom&&enemy[e].bottom>bullets[i].top){
                 enemy.splice(i,1)
+                bullets.splice(i,1)
                 continue
             }
         }
@@ -160,12 +161,16 @@ function enemyBullet() {
             ebullets.splice(i, 1);
             continue;
         }
-
         for (const m of map) {
             if (ebullets[i].top > m.top && ebullets[i].right > m.left && ebullets[i].left < m.right && ebullets[i].top <= m.bottom) {
                 ebullets.splice(i, 1)
                 break
             }
+        }
+        if(player.right>ebullets[i].left&&player.left<ebullets[i].right&&player.top<ebullets[i].bottom&&player.bottom>ebullets[i].top){
+            console.log("hit")
+            ebullets.splice(i,1)
+            continue
         }
     }
 }

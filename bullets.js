@@ -11,8 +11,8 @@ class Bullet{
         this.hitStatus=false
         this.speed=2
         this.direction={
-            x:Math.cos(angle)*this.speed,
-            y:Math.sin(angle)*this.speed
+            x:Math.cos(angle),
+            y:Math.sin(angle)
         }
         this.gravity=0.01
     }
@@ -36,7 +36,7 @@ class Bullet{
     }
     update(){
         this.position.x+=this.speed*this.direction.x
-        this.direction.y+=this.gravity+2
+        // this.direction.y+=this.gravity+2
         this.position.y+=this.direction.y
     }
 }

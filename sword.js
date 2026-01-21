@@ -50,7 +50,7 @@ class Sword {
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.lineTo(this.hitbox.x, this.hitbox.y);
-    ctx.strokeStyle = "yellow";
+    ctx.strokeStyle = "golden";
     ctx.lineWidth = this.width;
     ctx.stroke();
   }
