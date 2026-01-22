@@ -12,6 +12,7 @@ class Sword {
       width:this.length,
       length:this.width,
     }
+    this.hitStatus=false
   }
   attack() {
     if (!this.isAttacking) {
@@ -29,6 +30,7 @@ class Sword {
     if (this.isAttacking) {
       this.attackTime++;
       if (this.attackTime >= this.attackDuration) {
+        this.hitStatus=false
         this.isAttacking = false;
       }
     }

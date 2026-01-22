@@ -35,6 +35,7 @@ class Enemy{
         this.delay=2000
         this.lastAttack=0
         this.angle=0
+        this.hp=20
     }
     get top(){
         return this.position.y

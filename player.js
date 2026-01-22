@@ -21,9 +21,10 @@ class Player1 {
         this.prevbottom = 0
         this.onTop = false
         this.facing
-        this.primary ="gun"
+        this.primary ="sword"
         this.secondary = null
         this.isjumping=false
+        this.hp=100
     }
     get left() {
         return this.position.x

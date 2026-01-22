@@ -25,7 +25,7 @@ let map = [new Map(100, 200, 100, 50),
 new Map(400, 50, 100, 50),
 new Map(0, canvas.height - 10, world.width, 50),
 ]   
-enemy[0] = new Enemy(0, 440, "gun")
+enemy[0] = new Enemy(0, 440, "sword")
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
@@ -66,26 +66,53 @@ document.body.addEventListener("click", () => {
         bullets.push(new Bullet(x, y, angle))
     }
 })
-function bulletCollision() {
-    for (let i = bullets.length - 1; i >= 0; i--) {
-        for (const m of map) {
-            if (bullets[i].top > m.top && bullets[i].right > m.left && bullets[i].left < m.right && bullets[i].top <= m.bottom) {
-                bullets.splice(i, 1)
-                break
+function swordHit(sword,target){
+    const left=Math.min(sword.hitbox.x,sword.hitbox.x+sword.hitbox.length*target.facing)
+    const right=Math.max(sword.hitbox.x,sword.hitbox.x+sword.hitbox.length*target.facing)
+    if(target.right>left&&target.bottom>sword.hitbox.y&&target.top<sword.hitbox.y+sword.hitbox.width&&target.left<right&&sword.hitStatus==false){
+        sword.hitStatus=true
+        target.hp-=10
+    }
+}
+function playerAttackCollision() {
+    for (let e = enemy.length - 1; e >= 0; e--) {
+
+        if (
+            enemy[e].right < view.x ||
+            enemy[e].left > view.x + canvas.width / zoom ||
+            enemy[e].bottom < view.y ||
+            enemy[e].top > view.y + canvas.height / zoom
+        ) continue;
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            if (
+                enemy[e].right > bullets[i].left &&
+                enemy[e].left < bullets[i].right &&
+                enemy[e].top < bullets[i].bottom &&
+                enemy[e].bottom > bullets[i].top
+            ) {
+                enemy[e].hp -= 20;
+                bullets.splice(i, 1);
             }
         }
-        if(!bullets[i]){
-            continue    
+        if (
+            player.primary === "sword" &&
+            sword.isAttacking &&
+            swordHit(sword, enemy[e])
+        ) {
+            enemy[e].hp -= 10;
         }
-        for(let e= enemy.length-1;e>=0;e--){
-            if(enemy[e].right<view.x||enemy[e].bottom<view.y||enemy[e].left>view.x+canvas.width/zoom||enemy[e].top>view.y+canvas.height/zoom){
-                continue
-            }
-            if(enemy[e].right>bullets[i].left&&enemy[e].left<bullets[i].right&&enemy[e].top<bullets[i].bottom&&enemy[e].bottom>bullets[i].top){
-                enemy.splice(e,1)
-                bullets.splice(i,1)
-                break
-            }
+        if (enemy[e].hp <= 0) {
+            enemy.splice(e, 1);
+        }
+    }
+}
+function enemyAttack(e){
+    if(e.type=="gun"){
+        enemyBullet()
+    }
+    if(e.type=="sword"){
+        if(e.weapon.isAttacking){
+            swordHit(e.weapon,player)
         }
     }
 }
@@ -148,6 +175,7 @@ function enemyMove() {
             enemy[i].directions.y = 0
             enemy[i].attack()
         }
+        enemyAttack(enemy[i])
         enemy[i].shoot(player,ebullets,camera)
         enemy[i].update()
         obstacleCollision(enemy[i])
@@ -178,7 +206,8 @@ function enemyBullet() {
             continue
         }
         if(player.right>ebullets[i].left&&player.left<ebullets[i].right&&player.top<ebullets[i].bottom&&player.bottom>ebullets[i].top){
-            console.log("hit")
+            player.hp-=20
+            console.log(player.hp)
             ebullets.splice(i,1)
             continue
         }
@@ -248,7 +277,6 @@ function obstacleCollision(obj) {
         }
     }
 }
-
 function show() {
     ctx.fillStyle = "brown";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -273,13 +301,12 @@ function gameloop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     player.onTop = false;
     obstacleCollision(player);
-    bulletCollision();
+    playerAttackCollision();
     playerMove();
     player.update();
     cx = (player.left + player.right) / 2;
     cy = (player.top + player.bottom) / 2;
     enemyMove();
-    enemyBullet()
     const lerp = 0.01;
     let x = player.position.x + player.size.width / 2 - (canvas.width / 2) / zoom;
     let y = player.position.y + player.size.height / 2 - (canvas.height / 2) / zoom;
