@@ -21,11 +21,77 @@ let gun = new Guns()
 let keys = {}
 let enemy = []
 let gap = 20
-let map = [new Map(100, 200, 100, 50),
-new Map(400, 50, 100, 50),
-new Map(0, canvas.height - 10, world.width, 50),
-]   
-enemy[0] = new Enemy(0, 440, "sword")
+let currentLevel=1
+const level1 = [
+    new Map(0, 960, 3000, 40),
+
+    new Map(300, 820, 200, 20),
+    new Map(650, 700, 200, 20),
+    new Map(1000, 600, 200, 20),
+    new Map(1350, 520, 200, 20),
+    new Map(1700, 460, 200, 20),
+    new Map(2100, 420, 220, 20),
+    new Map(2500, 380, 250, 20),
+] 
+const level2 = [
+    new Map(0, 960, 3000, 40),
+
+    new Map(250, 820, 160, 20),
+    new Map(550, 680, 140, 20),
+    new Map(850, 560, 140, 20),
+    new Map(1150, 640, 140, 20),
+    new Map(1450, 500, 140, 20),
+    new Map(1750, 380, 140, 20),
+    new Map(2050, 520, 140, 20),
+    new Map(2350, 360, 160, 20),
+]
+const level3 = [
+    new Map(0, 960, 3000, 40),
+
+    new Map(220, 820, 120, 20),
+    new Map(480, 660, 120, 20),
+    new Map(760, 520, 120, 20),
+    new Map(1050, 620, 100, 20),
+    new Map(1300, 480, 100, 20),
+    new Map(1580, 360, 100, 20),
+    new Map(1850, 260, 120, 20),
+    new Map(2150, 420, 100, 20),
+    new Map(2450, 300, 120, 20),
+]
+const level4 = [
+    new Map(0, 960, 3000, 40),
+
+    new Map(200, 840, 90, 20),
+    new Map(480, 720, 80, 20),
+    new Map(800, 580, 80, 20),
+    new Map(1150, 680, 70, 20),
+    new Map(1450, 520, 70, 20),
+    new Map(1750, 400, 70, 20),
+    new Map(2050, 280, 70, 20),
+    new Map(2350, 420, 80, 20),
+    new Map(2650, 300, 90, 20),
+]
+const level5 = [
+    new Map(0, 960, 3000, 40),
+    new Map(260, 820, 60, 20),
+    new Map(580, 640, 60, 20),
+    new Map(920, 480, 60, 20),
+    new Map(1280, 600, 60, 20),
+    new Map(1620, 420, 60, 20),
+    new Map(1950, 260, 60, 20),
+    new Map(2300, 380, 60, 20),
+    new Map(2650, 240, 80, 20),
+]
+const levels = [
+    level1,
+    level2,
+    level3,
+    level4,
+    level5
+]
+let map=levels[currentLevel-1]
+console.log(map.length)
+enemy[0] = new Enemy(0, 910, "sword")
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
@@ -66,6 +132,70 @@ document.body.addEventListener("click", () => {
         bullets.push(new Bullet(x, y, angle))
     }
 })
+document.addEventListener("keyup", (event) => {
+    player.directions.x = 0
+    const key = event.key.toLowerCase()
+    keys[key] = false
+    if (key == player.lastKey) {
+        if (keys["w"]) {
+            player.lastKey = "w"
+        }
+        else if (keys["a"]) {
+            player.lastKey = "a"
+        }
+        else if (keys["d"]) {
+            player.lastKey = "d"
+        }
+        else {
+            player.lastKey = null
+        }
+    }
+})
+function obstacleCollision(obj) {
+    for (let i = 0; i < map.length; i++) {
+        map[i].draw(ctx)
+        if (obj.right >= map[i].left && obj.left <= map[i].right) {
+            if (obj.bottom >= map[i].top && obj.prevbottom <= map[i].top) {
+                if(obj==player){obj.onTop = true
+                obj.isjumping = false}
+                obj.directions.y = 0
+                obj.position.y = map[i].top - obj.size.height
+            }
+            if (obj.top <= map[i].bottom && obj.prevtop >= map[i].bottom) {
+                obj.position.y = map[i].bottom
+            }
+        }
+        if (obj.bottom >= map[i].top && obj.top <= map[i].bottom) {
+            if (obj.right >= map[i].left && obj.prevright <= map[i].left) {
+                obj.position.x = map[i].left - obj.size.width
+                obj.directions.x = 0
+            }
+            if (obj.left <= map[i].right && obj.prevleft >= map[i].right) {
+                obj.position.x = map[i].right
+                obj.directions.x = 0
+            }
+        }
+    }
+}
+function playerMove() {
+    if (player.lastKey === "w" && keys["w"] && player.onTop && !player.isjumping) {
+        player.directions.y = -6
+        if (keys["a"]) {
+            player.directions.x = -1
+        }
+        if (keys["d"]) {
+            player.directions.x = 1.5
+        }
+        player.onTop = false
+        player.isjumping = true
+    }
+    if (player.lastKey === "a" && keys["a"]) {
+        player.directions.x = -1
+    }
+    if (player.lastKey === "d" && keys["d"]) {
+        player.directions.x = 1
+    }
+}
 function swordHit(sword,target){
     const left=Math.min(sword.hitbox.x,sword.hitbox.x+sword.hitbox.length*target.facing)
     const right=Math.max(sword.hitbox.x,sword.hitbox.x+sword.hitbox.length*target.facing)
@@ -210,70 +340,6 @@ function enemyBullet() {
             console.log(player.hp)
             ebullets.splice(i,1)
             continue
-        }
-    }
-}
-function playerMove() {
-    if (player.lastKey === "w" && keys["w"] && player.onTop && !player.isjumping) {
-        player.directions.y = -6
-        if (keys["a"]) {
-            player.directions.x = -1
-        }
-        if (keys["d"]) {
-            player.directions.x = 1.5
-        }
-        player.onTop = false
-        player.isjumping = true
-    }
-    if (player.lastKey === "a" && keys["a"]) {
-        player.directions.x = -1
-    }
-    if (player.lastKey === "d" && keys["d"]) {
-        player.directions.x = 1
-    }
-}
-document.addEventListener("keyup", (event) => {
-    player.directions.x = 0
-    const key = event.key.toLowerCase()
-    keys[key] = false
-    if (key == player.lastKey) {
-        if (keys["w"]) {
-            player.lastKey = "w"
-        }
-        else if (keys["a"]) {
-            player.lastKey = "a"
-        }
-        else if (keys["d"]) {
-            player.lastKey = "d"
-        }
-        else {
-            player.lastKey = null
-        }
-    }
-})
-function obstacleCollision(obj) {
-    for (let i = 0; i < map.length; i++) {
-        map[i].draw(ctx)
-        if (obj.right >= map[i].left && obj.left <= map[i].right) {
-            if (obj.bottom >= map[i].top && obj.prevbottom <= map[i].top) {
-                if(obj==player){obj.onTop = true
-                obj.isjumping = false}
-                obj.directions.y = 0
-                obj.position.y = map[i].top - obj.size.height
-            }
-            if (obj.top <= map[i].bottom && obj.prevtop >= map[i].bottom) {
-                obj.position.y = map[i].bottom
-            }
-        }
-        if (obj.bottom >= map[i].top && obj.top <= map[i].bottom) {
-            if (obj.right >= map[i].left && obj.prevright <= map[i].left) {
-                obj.position.x = map[i].left - obj.size.width
-                obj.directions.x = 0
-            }
-            if (obj.left <= map[i].right && obj.prevleft >= map[i].right) {
-                obj.position.x = map[i].right
-                obj.directions.x = 0
-            }
         }
     }
 }
