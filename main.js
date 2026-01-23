@@ -19,9 +19,8 @@ canvas.height = 500
 let player = new Player1()
 let gun = new Guns()
 let keys = {}
-let enemy = []
-let gap = 20
-let currentLevel=1
+
+let currentLevel=2
 const level1 = [
     new Map(0, 960, 3000, 40),
 
@@ -89,9 +88,48 @@ const levels = [
     level4,
     level5
 ]
+const enemylevel1=[
+    new Enemy(300,910,"sword",2000),
+    new Enemy(800,910,"gun",1000),
+]
+const enemylevel2=[
+    new Enemy(210,910,"sword",1800),
+    new Enemy(700,910,"sword",1800),
+    new Enemy(1200,910,"gun",900),
+]
+const enemylevel3=[
+    new Enemy(150,910,"sword",1500),
+    new Enemy(500,910,"gun",700),
+    new Enemy(900,910,"sword",1500),
+    new Enemy(1400,910,"gun",1000),
+]
+const enemylevel4=[
+    new Enemy(200,910,"sword",2000),
+    new Enemy(600,910,"gun",1000),
+    new Enemy(900,910,"sword",2000),
+    new Enemy(1400,910,"gun",1000),
+    new Enemy(1500,910,"sword",2000),
+    new Enemy(1100,910,"gun",1000),
+]
+const enemylevel5=[
+    new Enemy(300,910,"sword",2000),
+    new Enemy(800,910,"gun",1000),
+    new Enemy(300,910,"sword",2000),
+    new Enemy(800,910,"gun",1000),
+    new Enemy(300,910,"sword",2000),
+    new Enemy(800,910,"gun",1000),
+    new Enemy(300,910,"sword",2000),
+    new Enemy(800,910,"gun",1000),
+]
+const elevels = [
+    enemylevel1,
+    enemylevel2,
+    enemylevel3,
+    enemylevel4,
+    enemylevel5
+]
 let map=levels[currentLevel-1]
-console.log(map.length)
-enemy[0] = new Enemy(0, 910, "sword")
+let enemy = elevels[currentLevel-1]
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
@@ -286,7 +324,7 @@ function enemyMove() {
             let x=(enemy[i].left+enemy[i].right)/2
             enemy[i].angle= Math.atan2(cy-y,cx-x)
         }
-        if (player.top - enemy[i].bottom > gap || enemy[i].left - player.right > gap || enemy[i].top - player.bottom > gap || player.left - enemy[i].right > gap) {
+        if (player.top - enemy[i].bottom > enemy[i].gap || enemy[i].left - player.right > enemy[i].gap || enemy[i].top - player.bottom > enemy[i].gap || player.left - enemy[i].right > enemy[i].gap) {
             if (enemy[i].left > player.left) {
                 enemy[i].directions.x = -1
             }
@@ -337,7 +375,6 @@ function enemyBullet() {
         }
         if(player.right>ebullets[i].left&&player.left<ebullets[i].right&&player.top<ebullets[i].bottom&&player.bottom>ebullets[i].top){
             player.hp-=20
-            console.log(player.hp)
             ebullets.splice(i,1)
             continue
         }
@@ -364,6 +401,12 @@ function show() {
 }
 function gameloop() {
     requestAnimationFrame(gameloop);
+    if(player.hp<=0){
+        ctx.font="50px Arial"
+        ctx.fillStyle="purple"
+        ctx.fillText("Game Over",canvas.width/2-100,canvas.height/2)
+        return
+    }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     player.onTop = false;
     obstacleCollision(player);
@@ -383,6 +426,12 @@ function gameloop() {
     if (view.x + canvas.width / zoom > world.width) view.x = world.width - canvas.width / zoom;
     if (view.y + canvas.height / zoom > world.height) view.y = world.height - canvas.height / zoom;
     show();
+    ctx.textAlign = "left"
+    ctx.textBaseline = "top"
+    ctx.font = "24px Arial"
+    ctx.fillStyle = "white"
+    ctx.fillText(`${player.hp}`,20,20)
+   
 
 }
 gameloop()

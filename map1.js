@@ -27,6 +27,5 @@ class Map{
         ctx.fillStyle="pink"
         ctx.fill()
     }
-    
 }
 export default Map

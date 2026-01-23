@@ -2,7 +2,7 @@ import Sword from "./sword.js"
 import Guns from "./guns.js"
 import Bullet from "./bullets.js"
 class Enemy{
-    constructor(x,y,type){
+    constructor(x,y,type,delay){
         this.position={
             x:x,
             y:y
@@ -26,13 +26,16 @@ class Enemy{
         //     right:right,
         //     bottom:bottom
         // }
-
         this.type=type
-        if(this.type=="sword"){this.weapon=new Sword()}
-        if(this.type=="gun"){this.weapon=new Guns()}
+        if(this.type=="sword"){this.weapon=new Sword(),
+            this.gap=20
+        }
+        if(this.type=="gun"){this.weapon=new Guns(),
+            this.gap=500
+        }
         this.facing
         this.alive=true
-        this.delay=2000
+        this.delay=delay
         this.lastAttack=0
         this.angle=0
         this.hp=20
