@@ -20,10 +20,9 @@ let player = new Player1()
 let gun = new Guns()
 let keys = {}
 
-let currentLevel=2
+let currentLevel=5
 const level1 = [
     new Map(0, 960, 3000, 40),
-
     new Map(300, 820, 200, 20),
     new Map(650, 700, 200, 20),
     new Map(1000, 600, 200, 20),
@@ -31,10 +30,11 @@ const level1 = [
     new Map(1700, 460, 200, 20),
     new Map(2100, 420, 220, 20),
     new Map(2500, 380, 250, 20),
+    new Map(550, 780, 30, 180),
+    new Map(1550, 480, 30, 220),
 ] 
 const level2 = [
     new Map(0, 960, 3000, 40),
-
     new Map(250, 820, 160, 20),
     new Map(550, 680, 140, 20),
     new Map(850, 560, 140, 20),
@@ -43,6 +43,9 @@ const level2 = [
     new Map(1750, 380, 140, 20),
     new Map(2050, 520, 140, 20),
     new Map(2350, 360, 160, 20),
+    new Map(700, 600, 25, 260),
+    new Map(1600, 360, 25, 300),
+    new Map(2250, 420, 25, 240),
 ]
 const level3 = [
     new Map(0, 960, 3000, 40),
@@ -56,6 +59,9 @@ const level3 = [
     new Map(1850, 260, 120, 20),
     new Map(2150, 420, 100, 20),
     new Map(2450, 300, 120, 20),
+    new Map(900, 500, 20, 320),
+    new Map(1450, 360, 20, 360),
+    new Map(2050, 300, 20, 400),
 ]
 const level4 = [
     new Map(0, 960, 3000, 40),
@@ -69,6 +75,9 @@ const level4 = [
     new Map(2050, 280, 70, 20),
     new Map(2350, 420, 80, 20),
     new Map(2650, 300, 90, 20),
+    new Map(600, 620, 18, 300),
+    new Map(1200, 460, 18, 360),
+    new Map(1900, 260, 18, 420),
 ]
 const level5 = [
     new Map(0, 960, 3000, 40),
@@ -80,6 +89,10 @@ const level5 = [
     new Map(1950, 260, 60, 20),
     new Map(2300, 380, 60, 20),
     new Map(2650, 240, 80, 20),
+    new Map(450, 640, 15, 320),
+    new Map(1050, 440, 15, 380),
+    new Map(1750, 260, 15, 440),
+    new Map(2450, 240, 15, 480),
 ]
 const levels = [
     level1,
@@ -194,8 +207,10 @@ function obstacleCollision(obj) {
         map[i].draw(ctx)
         if (obj.right >= map[i].left && obj.left <= map[i].right) {
             if (obj.bottom >= map[i].top && obj.prevbottom <= map[i].top) {
-                if(obj==player){obj.onTop = true
-                obj.isjumping = false}
+                if(obj==player){
+                obj.onTop = true
+                obj.isjumping = false
+            }
                 obj.directions.y = 0
                 obj.position.y = map[i].top - obj.size.height
             }
@@ -208,7 +223,7 @@ function obstacleCollision(obj) {
                 obj.position.x = map[i].left - obj.size.width
                 obj.directions.x = 0
             }
-            if (obj.left <= map[i].right && obj.prevleft >= map[i].right) {
+            else if (obj.left <= map[i].right && obj.prevleft >= map[i].right) {
                 obj.position.x = map[i].right
                 obj.directions.x = 0
             }
