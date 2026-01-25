@@ -25,6 +25,7 @@ class Player1 {
         this.secondary = null
         this.isjumping=false
         this.hp=100
+        this.currentLevel=1
     }
     get left() {
         return this.position.x
@@ -70,12 +71,14 @@ class Player1 {
         }
         if (this.right > 3000) {
             this.position.x = 3000 - this.size.width
+            this.currentLevel+=1
         }
         if (this.bottom > 1000) {
             this.position.y = 1000 - this.size.height
         }
     }
     update() {
+        console.log(this.currentLevel)
         this.prevbottom = this.bottom
         this.prevleft = this.left
         this.prevright = this.right

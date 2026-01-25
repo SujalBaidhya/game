@@ -19,8 +19,6 @@ canvas.height = 500
 let player = new Player1()
 let gun = new Guns()
 let keys = {}
-
-let currentLevel=5
 const level1 = [
     new Map(0, 960, 3000, 40),
     new Map(300, 820, 200, 20),
@@ -49,7 +47,6 @@ const level2 = [
 ]
 const level3 = [
     new Map(0, 960, 3000, 40),
-
     new Map(220, 820, 120, 20),
     new Map(480, 660, 120, 20),
     new Map(760, 520, 120, 20),
@@ -65,7 +62,6 @@ const level3 = [
 ]
 const level4 = [
     new Map(0, 960, 3000, 40),
-
     new Map(200, 840, 90, 20),
     new Map(480, 720, 80, 20),
     new Map(800, 580, 80, 20),
@@ -141,8 +137,8 @@ const elevels = [
     enemylevel4,
     enemylevel5
 ]
-let map=levels[currentLevel-1]
-let enemy = elevels[currentLevel-1]
+let map=levels[player.currentLevel-1]
+let enemy = elevels[player.currentLevel-1]
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
@@ -416,6 +412,8 @@ function show() {
 }
 function gameloop() {
     requestAnimationFrame(gameloop);
+    map=levels[player.currentLevel-1]
+    enemy = elevels[player.currentLevel-1]
     if(player.hp<=0){
         ctx.font="50px Arial"
         ctx.fillStyle="purple"
