@@ -77,7 +77,6 @@ class Enemy{
             ) {
                 return;
             }
-
             // if(player.left>this.max.left&&player.right<this.max.right&&player.top>this.max.top&&player.bottom<this.max.bottom){
                 const now = Date.now();
                 if (now - this.lastAttack < this.delay) return;

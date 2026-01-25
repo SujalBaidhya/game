@@ -19,6 +19,7 @@ canvas.height = 500
 let player = new Player1()
 let gun = new Guns()
 let keys = {}
+let currentLevel=5
 const level1 = [
     new Map(0, 960, 3000, 40),
     new Map(300, 820, 200, 20),
@@ -121,13 +122,13 @@ const enemylevel4=[
     new Enemy(1100,910,"gun",1000),
 ]
 const enemylevel5=[
-    new Enemy(300,910,"sword",2000),
+    new Enemy(400,910,"sword",2000),
     new Enemy(800,910,"gun",1000),
     new Enemy(300,910,"sword",2000),
     new Enemy(800,910,"gun",1000),
-    new Enemy(300,910,"sword",2000),
+    new Enemy(600,910,"sword",2000),
     new Enemy(800,910,"gun",1000),
-    new Enemy(300,910,"sword",2000),
+    new Enemy(900,910,"sword",2000),
     new Enemy(800,910,"gun",1000),
 ]
 const elevels = [
@@ -137,8 +138,9 @@ const elevels = [
     enemylevel4,
     enemylevel5
 ]
-let map=levels[player.currentLevel-1]
-let enemy = elevels[player.currentLevel-1]
+let map=levels[currentLevel-1]
+let enemy = elevels[currentLevel-1]
+let enemycount = enemy.length
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
 let ex = cx
@@ -149,6 +151,7 @@ let mouseactive = false
 let bullets = []
 let ebullets=[]
 const zoom = 0.7;
+let levelincreased=false
 document.addEventListener("keydown", (event) => {
     const key = event.key.toLowerCase()
     if (key == "a" || key == "d" || key == "w") {
@@ -226,6 +229,32 @@ function obstacleCollision(obj) {
         }
     }
 }
+function levelup(){
+    map=levels[currentLevel-1]
+    enemy = elevels[currentLevel-1]
+    enemycount = enemy.length
+}
+function playerCollide(){
+    if (player.top < 0) {
+            player.position.y = 0
+        }
+        if (player.left < 0) {
+            player.position.x = 0
+        }
+        if (player.right > 3000) {
+            player.position.x = 3000 - player.size.width
+            if(!levelincreased&&enemycount==0){
+                player.position.x=0
+                player.hp=100
+                currentLevel+=1
+                levelincreased=true
+                levelup()
+            }
+        }
+        if (player.bottom > 1000) {
+            player.position.y = 1000 - player.size.height
+        }
+}
 function playerMove() {
     if (player.lastKey === "w" && keys["w"] && player.onTop && !player.isjumping) {
         player.directions.y = -6
@@ -244,6 +273,7 @@ function playerMove() {
     if (player.lastKey === "d" && keys["d"]) {
         player.directions.x = 1
     }
+    playerCollide()
 }
 function swordHit(sword,target){
     const left=Math.min(sword.hitbox.x,sword.hitbox.x+sword.hitbox.length*target.facing)
@@ -255,7 +285,6 @@ function swordHit(sword,target){
 }
 function playerAttackCollision() {
     for (let e = enemy.length - 1; e >= 0; e--) {
-
         if (
             enemy[e].right < view.x ||
             enemy[e].left > view.x + canvas.width / zoom ||
@@ -282,6 +311,7 @@ function playerAttackCollision() {
         }
         if (enemy[e].hp <= 0) {
             enemy.splice(e, 1);
+            enemycount-=1
         }
     }
 }
@@ -412,8 +442,7 @@ function show() {
 }
 function gameloop() {
     requestAnimationFrame(gameloop);
-    map=levels[player.currentLevel-1]
-    enemy = elevels[player.currentLevel-1]
+    console.log(enemycount)
     if(player.hp<=0){
         ctx.font="50px Arial"
         ctx.fillStyle="purple"
@@ -444,7 +473,5 @@ function gameloop() {
     ctx.font = "24px Arial"
     ctx.fillStyle = "white"
     ctx.fillText(`${player.hp}`,20,20)
-   
-
 }
 gameloop()

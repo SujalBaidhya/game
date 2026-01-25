@@ -21,11 +21,10 @@ class Player1 {
         this.prevbottom = 0
         this.onTop = false
         this.facing
-        this.primary ="sword"
+        this.primary ="gun"
         this.secondary = null
         this.isjumping=false
         this.hp=100
-        this.currentLevel=1
     }
     get left() {
         return this.position.x
@@ -43,42 +42,18 @@ class Player1 {
     draw(ctx) {
         const cx = (this.left + this.right) / 2;
         const cy = (this.top + this.bottom) / 2;
-
         ctx.save();
         ctx.translate(cx, cy);
         ctx.scale(this.facing, 1); 
-
         const w = this.size.width;
         const h = this.size.height;
-
-
         ctx.fillStyle = "red";
         ctx.fillRect(-w / 2, -h / 2, w / 2, h);
-
-
         ctx.fillStyle = "blue";
         ctx.fillRect(0, -h / 2, w / 2, h);
-
         ctx.restore();
     }
-
-    collide() {
-        if (this.top < 0) {
-            this.position.y = 0
-        }
-        if (this.left < 0) {
-            this.position.x = 0
-        }
-        if (this.right > 3000) {
-            this.position.x = 3000 - this.size.width
-            this.currentLevel+=1
-        }
-        if (this.bottom > 1000) {
-            this.position.y = 1000 - this.size.height
-        }
-    }
     update() {
-        console.log(this.currentLevel)
         this.prevbottom = this.bottom
         this.prevleft = this.left
         this.prevright = this.right
@@ -92,7 +67,6 @@ class Player1 {
             }
         }
         else { this.directions.y = 0 }
-        this.collide()
     }
 }
 export default Player1
