@@ -85,7 +85,7 @@ class Enemy{
                 const px = (player.left + player.right) / 2;
                 const py = (player.top + player.bottom) / 2;
                 const angle = Math.atan2(py - cy, px - cx);
-                ebullets.push(new Bullet(cx,cy,angle))
+                ebullets.push(new Bullet(cx,cy,angle,this))
                 this.lastAttack = now;
             // }
         }

@@ -1,5 +1,5 @@
 class Bullet{
-    constructor(x,y,angle){
+    constructor(x,y,angle,owner){
         this.size={
         width:10,
         height:10
@@ -15,6 +15,7 @@ class Bullet{
             y:Math.sin(angle)
         }
         this.gravity=0.01
+        this.owner=owner
     }
     get top(){
         return this.position.y

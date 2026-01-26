@@ -4,6 +4,7 @@ import Bullet from "./bullets.js"
 import Map from "./map1.js"
 import Enemy from "./enemy.js"
 import Sword from "./sword.js"
+//draw enemy only if alive and dont splice enemy if dead 
 const world = {
     width: 3000,
     height: 3000
@@ -179,7 +180,7 @@ document.body.addEventListener("click", () => {
     else if (player.primary == "gun") {
         const x = cx + Math.cos(angle) * gun.size.width//x point direction ratio of the angle 
         const y = cy + Math.sin(angle) * gun.size.width//y point direction ratio of angle
-        bullets.push(new Bullet(x, y, angle))
+        bullets.push(new Bullet(x, y, angle,player))
     }
 })
 document.addEventListener("keyup", (event) => {
@@ -233,6 +234,11 @@ function levelup(){
     map=levels[currentLevel-1]
     enemy = elevels[currentLevel-1]
     enemycount = enemy.length
+    for(e of enemy){
+        player.speed=(currentLevel-1)
+        e.hp=e.hp*currentLevel
+        // e.speed=e.speed*(currentLevel-1)
+    }
 }
 function playerCollide(){
     if (player.top < 0) {
@@ -397,9 +403,16 @@ function enemyBullet() {
             ebullets[i].right < view.x ||
             ebullets[i].left > view.x + canvas.width / zoom ||
             ebullets[i].bottom < view.y ||
-            ebullets[i].top > view.y + canvas.height / zoom
+            ebullets[i].top > view.y + canvas.height / zoom 
         ) {
             ebullets.splice(i, 1);
+            continue;
+        }
+        if(!ebullets[i]){
+            continue
+        }
+        if(!ebullets[i].owner||!ebullets[i].owner.alive){
+             ebullets.splice(i, 1);
             continue;
         }
         if(!ebullets[i]){
