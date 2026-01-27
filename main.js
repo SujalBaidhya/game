@@ -330,6 +330,37 @@ function playerAttackCollision() {
         }
     }
 }
+function enemyBullet() {
+    for (let i = ebullets.length - 1; i >= 0; i--) {
+        console.log(ebullets[i].owner.alive)
+          if(!ebullets[i].owner||!ebullets[i].owner.alive){
+            ebullets.splice(i, 1);
+            continue;
+        }
+        if (
+            ebullets[i].right < view.x ||
+            ebullets[i].left > view.x + canvas.width / zoom ||
+            ebullets[i].bottom < view.y ||
+            ebullets[i].top > view.y + canvas.height / zoom 
+        ) {
+            ebullets.splice(i, 1);
+            continue;
+        }
+        for (const m of map) {
+            if (ebullets[i].top > m.top && ebullets[i].right > m.left && ebullets[i].left < m.right && ebullets[i].top <= m.bottom) {
+                ebullets.splice(i, 1)
+                break
+            }
+        }
+        if(player.right>ebullets[i].left&&player.left<ebullets[i].right&&player.top<ebullets[i].bottom&&player.bottom>ebullets[i].top){
+            player.hp=20
+            ebullets.splice(i,1)
+            continue
+        }
+        ebullets[i].update()
+        ebullets[i].draw(ctx)
+    }
+}
 function enemyAttack(e){
     if(e.type=="gun"){
         enemyBullet()
@@ -400,50 +431,11 @@ function enemyMove() {
             enemy[i].directions.y = 0
             enemy[i].attack()
         }
-        enemyAttack(enemy[i])
-        enemy[i].shoot(player,ebullets,camera)
         enemy[i].update()
         obstacleCollision(enemy[i])
     }
-    }
-}
-function enemyBullet() {
-    for (let i = ebullets.length - 1; i >= 0; i--) {
-        ebullets[i].update()
-        if (
-            ebullets[i].right < view.x ||
-            ebullets[i].left > view.x + canvas.width / zoom ||
-            ebullets[i].bottom < view.y ||
-            ebullets[i].top > view.y + canvas.height / zoom 
-        ) {
-            ebullets.splice(i, 1);
-            continue;
-        }
-        if(!ebullets[i]){
-            continue
-        }
-        console.log(ebullets[i].owner)
-        if(!ebullets[i].owner||!ebullets[i].owner.alive){
-            ebullets.splice(i, 1);
-            continue;
-        }
-        if(!ebullets[i]){
-            continue
-        }
-        for (const m of map) {
-            if (ebullets[i].top > m.top && ebullets[i].right > m.left && ebullets[i].left < m.right && ebullets[i].top <= m.bottom) {
-                ebullets.splice(i, 1)
-                break
-            }
-        }
-        if(!ebullets[i]){
-            continue
-        }
-        if(player.right>ebullets[i].left&&player.left<ebullets[i].right&&player.top<ebullets[i].bottom&&player.bottom>ebullets[i].top){
-            player.hp=20
-            ebullets.splice(i,1)
-            continue
-        }
+    enemyAttack(enemy[i])
+        enemy[i].shoot(player,ebullets,camera)
     }
 }
 function show() {
@@ -460,9 +452,9 @@ function show() {
             e.draw(ctx);
         }
     }
-    // for(const b of ebullets){
-    //     b.draw(ctx)
-    // }
+    for(const b of ebullets){
+        b.draw(ctx)
+    }
     player.draw(ctx);
     weapon();
     ctx.restore();
