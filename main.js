@@ -4,7 +4,6 @@ import Bullet from "./bullets.js"
 import Map from "./map1.js"
 import Enemy from "./enemy.js"
 import Sword from "./sword.js"
-//draw enemy only if alive and dont splice enemy if dead 
 const world = {
     width: 3000,
     height: 3000
@@ -20,85 +19,70 @@ canvas.height = 500
 let player = new Player1()
 let gun = new Guns()
 let keys = {}
-let currentLevel=2
+let currentLevel=3
 const level1 = [
-        new Map(0, 960, 3000, 40),
-        new Map(300, 820, 200, 20),
-        new Map(650, 700, 200, 20),
-        new Map(1000, 600, 200, 20),
-        new Map(1350, 520, 200, 20),
-        new Map(1700, 460, 200, 20),
-        new Map(2100, 420, 220, 20),
-        new Map(2500, 380, 250, 20),
-        new Map(550, 780, 30, 180),
-        new Map(1550, 480, 30, 220),
-] 
+    new Map(0, 960, 3000, 40),       
+    new Map(150, 800, 250, 20),
+    new Map(500, 720, 180, 20),
+    new Map(900, 650, 200, 20),
+    new Map(1400, 750, 150, 20),
+    new Map(1800, 680, 180, 20),
+    new Map(400, 0, 20, 300),         
+    new Map(1200, 0, 20, 400),
+    new Map(1600, 620, 20, 80),       
+    new Map(2000, 0, 20, 350),
+];
 const level2 = [
     new Map(0, 960, 3000, 40),
-    new Map(250, 820, 160, 20),
-    new Map(550, 680, 140, 20),
-    new Map(850, 560, 140, 20),
-    new Map(1150, 640, 140, 20),
-    new Map(1450, 500, 140, 20),
-    new Map(1750, 380, 140, 20),
-    new Map(2050, 520, 140, 20),
-    new Map(2350, 360, 160, 20),
-    new Map(700, 600, 25, 260),
-    new Map(1600, 360, 25, 300),
-    new Map(2250, 420, 25, 240),
-]
+    new Map(150, 780, 200, 20),
+    new Map(450, 650, 220, 20),
+    new Map(800, 730, 180, 20),
+    new Map(1200, 650, 200, 20),
+    new Map(1600, 700, 150, 20),
+    new Map(2100, 600, 180, 20),
+    new Map(2500, 550, 120, 20),
+    new Map(600, 0, 20, 300),
+    new Map(1400, 600, 20, 100),       
+    new Map(2200, 0, 20, 400),
+];
+
 const level3 = [
     new Map(0, 960, 3000, 40),
-    new Map(220, 820, 120, 20),
-    new Map(480, 660, 120, 20),
-    new Map(760, 520, 120, 20),
-    new Map(1050, 620, 100, 20),
-    new Map(1300, 480, 100, 20),
-    new Map(1580, 360, 100, 20),
-    new Map(1850, 260, 120, 20),
-    new Map(2150, 420, 100, 20),
-    new Map(2450, 300, 120, 20),
-    new Map(900, 500, 20, 320),
-    new Map(1450, 360, 20, 360),
-    new Map(2050, 300, 20, 400),
-]
+    new Map(200, 800, 180, 20),
+    new Map(600, 720, 220, 20),
+    new Map(1050, 650, 200, 20),
+    new Map(1500, 720, 180, 20),
+    new Map(1900, 650, 200, 20),
+    new Map(400, 0, 20, 400),
+    new Map(1200, 600, 20, 80),       
+    new Map(2000, 0, 20, 600),
+];
 const level4 = [
     new Map(0, 960, 3000, 40),
-    new Map(200, 840, 90, 20),
-    new Map(480, 720, 80, 20),
-    new Map(800, 580, 80, 20),
-    new Map(1150, 680, 70, 20),
-    new Map(1450, 520, 70, 20),
-    new Map(1750, 400, 70, 20),
-    new Map(2050, 280, 70, 20),
-    new Map(2350, 420, 80, 20),
-    new Map(2650, 300, 90, 20),
-    new Map(600, 620, 18, 300),
-    new Map(1200, 460, 18, 360),
-    new Map(1900, 260, 18, 420),
-]
+    new Map(150, 800, 200, 20),
+    new Map(450, 700, 180, 20),
+    new Map(750, 620, 200, 20),
+    new Map(1100, 680, 180, 20),
+    new Map(1450, 600, 220, 20),
+    new Map(1800, 720, 150, 20),
+    new Map(500, 0, 20, 500),
+    new Map(1000, 550, 20, 60),       
+    new Map(1700, 0, 20, 600),
+];
 const level5 = [
     new Map(0, 960, 3000, 40),
-    new Map(260, 820, 60, 20),
-    new Map(580, 640, 60, 20),
-    new Map(920, 480, 60, 20),
-    new Map(1280, 600, 60, 20),
-    new Map(1620, 420, 60, 20),
-    new Map(1950, 260, 60, 20),
-    new Map(2300, 380, 60, 20),
-    new Map(2650, 240, 80, 20),
-    new Map(450, 640, 15, 320),
-    new Map(1050, 440, 15, 380),
-    new Map(1750, 260, 15, 440),
-    new Map(2450, 240, 15, 480),
-]
-const levels = [
-    level1,
-    level2,
-    level3,
-    level4,
-    level5
-]
+    new Map(150, 800, 180, 20),
+    new Map(500, 700, 200, 20),
+    new Map(900, 650, 180, 20),
+    new Map(1350, 720, 200, 20),
+    new Map(1800, 640, 220, 20),
+    new Map(2250, 700, 180, 20),
+    new Map(400, 0, 20, 500),
+    new Map(1100, 580, 20, 80),        
+    new Map(1600, 0, 20, 700),
+    new Map(2100, 640, 20, 60),       
+];
+const levels = [level1, level2, level3, level4, level5];
 const enemylevel1=[
     new Enemy(300,910,"sword",2000),
     new Enemy(800,910,"gun",1000),
@@ -332,7 +316,6 @@ function playerAttackCollision() {
 }
 function enemyBullet() {
     for (let i = ebullets.length - 1; i >= 0; i--) {
-        console.log(ebullets[i].owner.alive)
           if(!ebullets[i].owner||!ebullets[i].owner.alive){
             ebullets.splice(i, 1);
             continue;
@@ -351,6 +334,9 @@ function enemyBullet() {
                 ebullets.splice(i, 1)
                 break
             }
+        }
+        if(!ebullets[i]){
+            continue
         }
         if(player.right>ebullets[i].left&&player.left<ebullets[i].right&&player.top<ebullets[i].bottom&&player.bottom>ebullets[i].top){
             player.hp=20
