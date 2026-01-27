@@ -25,6 +25,7 @@ class Player1 {
         this.secondary = null
         this.isjumping=false
         this.hp=100
+        this.alive=true
     }
     get left() {
         return this.position.x

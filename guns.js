@@ -20,7 +20,7 @@ class Guns{
         ctx.beginPath()
         ctx.translate(this.translate.x,this.translate.y)
         ctx.rotate(this.angle)
-        ctx.rect(0,0,this.size.width,this.size.height)
+        ctx.rect(0,-this.size.height/2,this.size.width,this.size.height)
         ctx.fillStyle="green"
         ctx.fill()
         ctx.restore()
