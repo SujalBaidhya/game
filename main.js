@@ -4,6 +4,7 @@ import Bullet from "./bullets.js"
 import Map from "./map1.js"
 import Enemy from "./enemy.js"
 import Sword from "./sword.js"
+//do calculations only when there is player movement & collision check with only platforms in the screen not all
 const world = {
     width: 3000,
     height: 3000
@@ -19,7 +20,7 @@ canvas.height = 500
 let player = new Player1()
 let gun = new Guns()
 let keys = {}
-let currentLevel=3
+let currentLevel=1
 const level1 = [
     new Map(0, 960, 3000, 40),       
     new Map(150, 800, 250, 20),
@@ -157,7 +158,7 @@ document.addEventListener("mousemove", (event) => {
         player.facing = (ex >= cx) ? 1 : -1;
     }
 })
-document.body.addEventListener("click", () => {
+document.addEventListener("click", () => {
     if (player.primary == "sword") {
         sword.attack()
     }
@@ -188,7 +189,6 @@ document.addEventListener("keyup", (event) => {
 })
 function obstacleCollision(obj) {
     for (let i = 0; i < map.length; i++) {
-        map[i].draw(ctx)
         if (obj.right >= map[i].left && obj.left <= map[i].right) {
             if (obj.bottom >= map[i].top && obj.prevbottom <= map[i].top) {
                 if(obj==player){
@@ -218,7 +218,7 @@ function levelup(){
     map=levels[currentLevel-1]
     enemy = elevels[currentLevel-1]
     enemycount = enemy.length
-    for(e of enemy){
+    for(const e of enemy){
         player.speed=(currentLevel-1)
         e.hp=e.hp*currentLevel
         // e.speed=e.speed*(currentLevel-1)
@@ -231,9 +231,9 @@ function playerCollide(){
         if (player.left < 0) {
             player.position.x = 0
         }
-        if (player.right > 3000) {
+        if (player.right >= 3000) {
             player.position.x = 3000 - player.size.width
-            if(!levelincreased&&enemycount==0){
+            if(!levelincreased&&enemycount<=0){
                 player.position.x=0
                 player.hp=100
                 currentLevel+=1
@@ -308,9 +308,9 @@ function playerAttackCollision() {
         ) {
             enemy[e].hp -= 10;
         }
-        if (enemy[e].hp <= 0) {
-            enemy[e].alive=false
+        if (enemy[e].hp <= 0&&enemy[e].alive) {
             enemycount-=1
+            enemy[e].alive=false
         }
     }
 }
@@ -339,7 +339,7 @@ function enemyBullet() {
             continue
         }
         if(player.right>ebullets[i].left&&player.left<ebullets[i].right&&player.top<ebullets[i].bottom&&player.bottom>ebullets[i].top){
-            player.hp=20
+            player.hp-=20
             ebullets.splice(i,1)
             continue
         }
@@ -387,7 +387,7 @@ function enemyMove() {
     };
     for (let i = enemy.length - 1; i >= 0; i--) {
         if(enemy[i].alive){
-            if(player.left>=enemy[i].right){
+        if(player.left>=enemy[i].right){
             enemy[i].facing=1
         }
         if(player.right<enemy[i].left){
@@ -418,9 +418,8 @@ function enemyMove() {
             enemy[i].attack()
         }
         enemy[i].update()
-        obstacleCollision(enemy[i])
-    }
-    enemyAttack(enemy[i])
+        obstacleCollision(enemy[i])}
+        enemyAttack(enemy[i])
         enemy[i].shoot(player,ebullets,camera)
     }
 }
@@ -440,6 +439,9 @@ function show() {
     }
     for(const b of ebullets){
         b.draw(ctx)
+    }
+    for(const m of map){
+        m.draw(ctx)
     }
     player.draw(ctx);
     weapon();
@@ -476,6 +478,9 @@ function gameloop() {
     ctx.textBaseline = "top"
     ctx.font = "24px Arial"
     ctx.fillStyle = "white"
+    if(player.hp<0){
+        player.hp=0
+    }
     ctx.fillText(`${player.hp}`,20,20)
 }
 gameloop()
