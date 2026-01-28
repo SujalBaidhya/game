@@ -4,7 +4,7 @@ import Bullet from "./bullets.js"
 import Map from "./map1.js"
 import Enemy from "./enemy.js"
 import Sword from "./sword.js"
-//do calculations only when there is player movement & collision check with only platforms in the screen not all
+
 const world = {
     width: 3000,
     height: 3000
@@ -189,7 +189,8 @@ document.addEventListener("keyup", (event) => {
 })
 function obstacleCollision(obj) {
     for (let i = 0; i < map.length; i++) {
-        if (obj.right >= map[i].left && obj.left <= map[i].right) {
+        if(map[i].left<view.x+canvas.width/zoom&&map[i].right>view.x&&map[i].top<view.y+canvas.height/zoom&&map[i].bottom>view.y){
+            if (obj.right >= map[i].left && obj.left <= map[i].right) {
             if (obj.bottom >= map[i].top && obj.prevbottom <= map[i].top) {
                 if(obj==player){
                 obj.onTop = true
@@ -211,7 +212,7 @@ function obstacleCollision(obj) {
                 obj.position.x = map[i].right
                 obj.directions.x = 0
             }
-        }
+        }}
     }
 }
 function levelup(){
@@ -246,22 +247,27 @@ function playerCollide(){
         }
 }
 function playerMove() {
+    player.move=false
     if (player.lastKey === "w" && keys["w"] && player.onTop && !player.isjumping) {
         player.directions.y = -6
         if (keys["a"]) {
             player.directions.x = -1
+            player.move=true
         }
         if (keys["d"]) {
             player.directions.x = 1.5
+            player.move=true
         }
         player.onTop = false
         player.isjumping = true
     }
     if (player.lastKey === "a" && keys["a"]) {
         player.directions.x = -1
+        player.move=true
     }
     if (player.lastKey === "d" && keys["d"]) {
         player.directions.x = 1
+        player.move=true
     }
     playerCollide()
 }
@@ -394,9 +400,10 @@ function enemyMove() {
             enemy[i].facing=-1
         }
         if(enemy[i].type=="gun"){
+            if(player.move){
             let y=(enemy[i].top+enemy[i].bottom)/2
             let x=(enemy[i].left+enemy[i].right)/2
-            enemy[i].angle= Math.atan2(cy-y,cx-x)
+            enemy[i].angle= Math.atan2(cy-y,cx-x)}
         }
         if (player.top - enemy[i].bottom > enemy[i].gap || enemy[i].left - player.right > enemy[i].gap || enemy[i].top - player.bottom > enemy[i].gap || player.left - enemy[i].right > enemy[i].gap) {
             if (enemy[i].left > player.left) {
@@ -447,8 +454,7 @@ function show() {
     weapon();
     ctx.restore();
 }
-function gameloop() {
-    requestAnimationFrame(gameloop);
+function update(){
     if(player.hp<=0){
         ctx.font="50px Arial"
         ctx.fillStyle="purple"
@@ -483,4 +489,18 @@ function gameloop() {
     }
     ctx.fillText(`${player.hp}`,20,20)
 }
-gameloop()
+let lastTime = 0;
+const fps = 1000 / 240;
+let count = 0;
+function gameloop(time) {
+    requestAnimationFrame(gameloop);
+    count += time - lastTime;
+    lastTime = time;
+    while (count >= fps) {
+        console.log("hi")
+        update();
+        count -= fps;
+    }
+    show()
+}
+gameloop(lastTime)
