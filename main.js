@@ -4,7 +4,6 @@ import Bullet from "./bullets.js"
 import Map from "./map1.js"
 import Enemy from "./enemy.js"
 import Sword from "./sword.js"
-
 const world = {
     width: 3000,
     height: 3000
@@ -20,7 +19,7 @@ canvas.height = 500
 let player = new Player1()
 let gun = new Guns()
 let keys = {}
-let currentLevel=1
+let currentLevel=2
 const level1 = [
     new Map(0, 960, 3000, 40),       
     new Map(150, 800, 250, 20),
@@ -224,6 +223,7 @@ function levelup(){
         e.hp=e.hp*currentLevel
         // e.speed=e.speed*(currentLevel-1)
     }
+    levelincreased=true
 }
 function playerCollide(){
     if (player.top < 0) {
@@ -238,7 +238,6 @@ function playerCollide(){
                 player.position.x=0
                 player.hp=100
                 currentLevel+=1
-                levelincreased=true
                 levelup()
             }
         }
@@ -366,7 +365,7 @@ function enemyAttack(e){
 function weapon() {
     if (player.primary == "gun") {
         if (mouseactive) {
-            gun.draw(ctx, cx, cy, angle)
+            gun.draw(ctx, cx, cy, angle,player.facing)
         }
         else {
             gun.draw(ctx, cx, cy, 0)
@@ -455,13 +454,16 @@ function show() {
     ctx.restore();
 }
 function update(){
+    levelincreased=false
+    console.log(levelincreased)
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     if(player.hp<=0){
-        ctx.font="50px Arial"
-        ctx.fillStyle="purple"
+        // ctx.beginPath()
+        // ctx.font="50px Arial"
+        // ctx.fillStyle="purple"
         ctx.fillText("Game Over",canvas.width/2-100,canvas.height/2)
         return
     }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
     player.onTop = false;
     obstacleCollision(player);
     playerAttackCollision();
@@ -497,7 +499,6 @@ function gameloop(time) {
     count += time - lastTime;
     lastTime = time;
     while (count >= fps) {
-        console.log("hi")
         update();
         count -= fps;
     }

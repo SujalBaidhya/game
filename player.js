@@ -6,8 +6,8 @@ class Player1 {
         }
         this.gravity = 0.1
         this.size = {
-            width: 50,
-            height: 50
+            width: 150,
+            height: 150
         }
         this.directions = {
             x: 0,
@@ -21,12 +21,14 @@ class Player1 {
         this.prevbottom = 0
         this.onTop = false
         this.facing
-        this.primary ="gun"
+        this.primary = "gun"
         this.secondary = null
-        this.isjumping=false
-        this.hp=100
-        this.alive=true
-        this.move=false
+        this.isjumping = false
+        this.hp = 100
+        this.alive = true
+        this.move = false
+        this.img = new Image()
+        this.img.src = "soldier.png"
     }
     get left() {
         return this.position.x
@@ -44,16 +46,18 @@ class Player1 {
     draw(ctx) {
         const cx = (this.left + this.right) / 2;
         const cy = (this.top + this.bottom) / 2;
+
         ctx.save();
         ctx.translate(cx, cy);
-        ctx.scale(this.facing, 1); 
+
+        ctx.scale(this.facing, 1);
+
         const w = this.size.width;
         const h = this.size.height;
-        ctx.fillStyle = "red";
-        ctx.fillRect(-w / 2, -h / 2, w / 2, h);
-        ctx.fillStyle = "blue";
-        ctx.fillRect(0, -h / 2, w / 2, h);
+        ctx.drawImage(this.img,-w / 2, -h / 2, w, h);
+
         ctx.restore();
+
     }
     update() {
         this.prevbottom = this.bottom
@@ -64,8 +68,8 @@ class Player1 {
         this.position.y += this.directions.y * this.speed
         if (!this.onTop) {
             this.directions.y += this.gravity
-            if(this.directions.y>8){
-                this.directions.y=8
+            if (this.directions.y > 8) {
+                this.directions.y = 8
             }
         }
         else { this.directions.y = 0 }

@@ -26,6 +26,8 @@ class Enemy{
         //     right:right,
         //     bottom:bottom
         // }
+        this.img=new Image()
+        this.img.src="enemy.png"
         this.type=type
         if(this.type=="sword"){this.weapon=new Sword(),
             this.gap=20
