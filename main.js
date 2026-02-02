@@ -14,6 +14,10 @@ const view = {
     x: 0,
     y: 0
 }
+const hpText = document.getElementById("hp");
+const ammoText = document.getElementById("ammo");
+const reserveText = document.getElementById("reserve");
+const reloadText = document.getElementById("reload-text");
 canvas.width = 800
 canvas.height = 500
 let player = new Player1()
@@ -157,16 +161,18 @@ document.addEventListener("mousemove", (event) => {
         player.facing = (ex >= cx) ? 1 : -1;
     }
 })
-document.addEventListener("click", () => {
+let mouseDown=false
+document.addEventListener("mousedown", () => {
     if (player.primary == "sword") {
         sword.attack()
     }
     else if (player.primary == "gun") {
-        const x = cx + Math.cos(angle) * gun.size.width//x point direction ratio of the angle 
-        const y = cy + Math.sin(angle) * gun.size.width//y point direction ratio of angle
-        bullets.push(new Bullet(x, y, angle,player))
+        mouseDown=true
     }
 })
+document.addEventListener("mouseup", () => {
+    mouseDown = false;
+});
 document.addEventListener("keyup", (event) => {
     player.directions.x = 0
     const key = event.key.toLowerCase()
@@ -398,13 +404,14 @@ function enemyMove() {
         if(player.right<enemy[i].left){
             enemy[i].facing=-1
         }
-        if(enemy[i].type=="gun"){
-            if(player.move){
+        if(enemy[i].type=="gun"&&Math.random()<0.95){
             let y=(enemy[i].top+enemy[i].bottom)/2
             let x=(enemy[i].left+enemy[i].right)/2
-            enemy[i].angle= Math.atan2(cy-y,cx-x)}
+            enemy[i].angle= Math.atan2(cy-y,cx-x)
+    
         }
-        if (player.top - enemy[i].bottom > enemy[i].gap || enemy[i].left - player.right > enemy[i].gap || enemy[i].top - player.bottom > enemy[i].gap || player.left - enemy[i].right > enemy[i].gap) {
+        if (player.top - enemy[i].bottom > enemy[i].gap || enemy[i].left - player.right > enemy[i].gap || enemy[i].top - player.bottom > enemy[i].gap
+             || player.left - enemy[i].right > enemy[i].gap) {
             if (enemy[i].left > player.left) {
                 enemy[i].directions.x = -1
             }
@@ -452,26 +459,58 @@ function show() {
     player.draw(ctx);
     weapon();
     ctx.restore();
+    ctx.fillStyle = "white";
+    ctx.font = "24px Arial";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    if (player.hp <= 0) {
+        ctx.font = "50px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(
+            "Game Over",canvas.width / 2,canvas.height / 2);
+        ctx.textAlign = "left"
+        ctx.textBaseline = "top"
+        ctx.font = "24px Arial"
+        ctx.fillStyle = "white"
+        if(player.hp<0){
+            player.hp=0
+            player.alive=false
+        }
+    }
 }
+let lastFireTime=0
 function update(){
     levelincreased=false
-    console.log(levelincreased)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if(player.hp<=0){
-        // ctx.beginPath()
-        // ctx.font="50px Arial"
-        // ctx.fillStyle="purple"
-        ctx.fillText("Game Over",canvas.width/2-100,canvas.height/2)
-        return
-    }
+    enemyMove();
     player.onTop = false;
     obstacleCollision(player);
     playerAttackCollision();
     playerMove();
     player.update();
+    if (mouseDown && player.primary === "gun" &&!gun.reloading&&player.alive) 
+    {
+        const now = performance.now();
+        if (now - lastFireTime > player.fireRate) {
+            if (gun.currAmmo > 0) {
+                const x = cx + Math.cos(angle) * gun.size.width;
+                const y = cy + Math.sin(angle) * gun.size.width;
+                bullets.push(new Bullet(x, y, angle, player));
+                gun.currAmmo--;
+                lastFireTime = now;
+            }
+            else {
+                gun.reload();
+            }
+        }
+    }
+    if (player.primary === "gun") {
+    ammoText.textContent = gun.currAmmo;
+    reserveText.textContent = gun.totalAmmo;
+    }
+    hpText.textContent=player.hp
     cx = (player.left + player.right) / 2;
     cy = (player.top + player.bottom) / 2;
-    enemyMove();
     const lerp = 0.01;
     let x = player.position.x + player.size.width / 2 - (canvas.width / 2) / zoom;
     let y = player.position.y + player.size.height / 2 - (canvas.height / 2) / zoom;
@@ -481,15 +520,6 @@ function update(){
     if (view.y < 0) view.y = 0;
     if (view.x + canvas.width / zoom > world.width) view.x = world.width - canvas.width / zoom;
     if (view.y + canvas.height / zoom > world.height) view.y = world.height - canvas.height / zoom;
-    show();
-    ctx.textAlign = "left"
-    ctx.textBaseline = "top"
-    ctx.font = "24px Arial"
-    ctx.fillStyle = "white"
-    if(player.hp<0){
-        player.hp=0
-    }
-    ctx.fillText(`${player.hp}`,20,20)
 }
 let lastTime = 0;
 const fps = 1000 / 240;

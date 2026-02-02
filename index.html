@@ -3,11 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Canvas Shooter</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="canvas"></canvas>
+
+    <div id="game-container">
+        <div id="hud">
+            <div class="hud-item">
+                ❤️ HP: <span id="hp">100</span>
+            </div>
+
+            <div class="hud-item">
+                🔫 Ammo: 
+                <span id="ammo">30</span> / 
+                <span id="reserve">100</span>
+            </div>
+        </div>
+
+        <canvas id="canvas" width="800" height="500"></canvas>
+    </div>
+
     <script src="main.js" type="module"></script>
 </body>
 </html>

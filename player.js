@@ -23,6 +23,7 @@ class Player1 {
         this.facing
         this.primary = "gun"
         this.secondary = null
+        this.fireRate=200
         this.isjumping = false
         this.hp = 100
         this.alive = true

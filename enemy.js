@@ -36,6 +36,7 @@ class Enemy{
             this.gap=500
         }
         this.facing
+        this.state="walking"
         this.alive=true
         this.delay=delay
         this.lastAttack=0
@@ -72,10 +73,7 @@ class Enemy{
     shoot(player,ebullets,camera){
         if(this.type=="gun"&&this.alive){
             if (
-                this.right < camera.left ||
-                this.left > camera.right ||
-                this.bottom < camera.top ||
-                this.top > camera.bottom
+                this.right < camera.left ||this.left > camera.right ||this.bottom < camera.top ||this.top > camera.bottom
             ) {
                 return;
             }
