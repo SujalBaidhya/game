@@ -3,7 +3,6 @@
     padding: 0;
     box-sizing: border-box;
 }
-
 body {
     background: #111;
     display: flex;
@@ -13,17 +12,13 @@ body {
     color: white;
     font-family: Arial, sans-serif;
 }
-
 #game-container {
     position: relative;
 }
-
 #canvas {
     border: 2px solid #444;
     background: #000;
 }
-
-/* HUD */
 #hud {
     position: absolute;
     top: 10px;
@@ -35,7 +30,6 @@ body {
     border-radius: 8px;
     font-size: 18px;
 }
-
 .hud-item {
     white-space: nowrap;
 }
