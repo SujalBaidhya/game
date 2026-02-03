@@ -24,6 +24,7 @@ let player = new Player1()
 let gun = new Guns()
 let keys = {}
 let currentLevel=2
+let mouseDown=false
 const level1 = [
     new Map(0, 960, 3000, 40),       
     new Map(150, 800, 250, 20),
@@ -161,7 +162,6 @@ document.addEventListener("mousemove", (event) => {
         player.facing = (ex >= cx) ? 1 : -1;
     }
 })
-let mouseDown=false
 document.addEventListener("mousedown", () => {
     if (player.primary == "sword") {
         sword.attack()
@@ -286,42 +286,50 @@ function swordHit(sword,target){
 }
 function playerAttackCollision() {
     for (let e = enemy.length - 1; e >= 0; e--) {
-        if (enemy[e].right < view.x ||
+        if (!enemy[e].alive) continue;
+        if (
+            enemy[e].right < view.x ||
             enemy[e].left > view.x + canvas.width / zoom ||
             enemy[e].bottom < view.y ||
-            enemy[e].top > view.y + canvas.height / zoom) 
-            continue;
-        if(player.primary=="gun"){
+            enemy[e].top > view.y + canvas.height / zoom
+        ) continue;
+        if (player.primary === "gun") {
             for (let i = bullets.length - 1; i >= 0; i--) {
-            if(enemy[e].alive){if (
-                enemy[e].right > bullets[i].left &&
-                enemy[e].left < bullets[i].right &&
-                enemy[e].top < bullets[i].bottom &&
-                enemy[e].bottom > bullets[i].top
-            ) {
-                enemy[e].hp -= 20;
-                bullets.splice(i, 1);
+                const b = bullets[i];
+                if (!b) continue;
+                if (
+                    enemy[e].right > b.left &&
+                    enemy[e].left < b.right &&
+                    enemy[e].top < b.bottom &&
+                    enemy[e].bottom > b.top
+                ) {
+                    enemy[e].hp -= 20;
+                    bullets.splice(i, 1);
+                    continue;
+                }
+                for (let m of map) {
+                    if (
+                        b.right > m.left &&
+                        b.left < m.right &&
+                        b.bottom > m.top &&
+                        b.top < m.bottom
+                    ) {
+                        bullets.splice(i, 1);
+                        break;
+                    }
+                }
             }
-            if(!bullets[i]){
-                return
-            }
-            for (const m of map) {
-            if (bullets[i].top > m.top && bullets[i].right > m.left && bullets[i].left < m.right && bullets[i].top <= m.bottom) {
-                bullets.splice(i, 1)
-                break
-            }}
         }
-        }}
         if (
             player.primary === "sword" &&
             sword.isAttacking &&
-            swordHit(sword, enemy[e])
+            swordHit(sword, en)
         ) {
             enemy[e].hp -= 10;
         }
-        if (enemy[e].hp <= 0&&enemy[e].alive) {
-            enemycount-=1
-            enemy[e].alive=false
+        if (enemy[e].hp <= 0 && enemy[e].alive) {
+            enemy[e].alive = false;
+            enemycount--;
         }
     }
 }
@@ -404,14 +412,13 @@ function enemyMove() {
         if(player.right<enemy[i].left){
             enemy[i].facing=-1
         }
-        if(enemy[i].type=="gun"&&Math.random()<0.95){
+        if(enemy[i].type=="gun"){
             let y=(enemy[i].top+enemy[i].bottom)/2
             let x=(enemy[i].left+enemy[i].right)/2
             enemy[i].angle= Math.atan2(cy-y,cx-x)
-    
         }
-        if (player.top - enemy[i].bottom > enemy[i].gap || enemy[i].left - player.right > enemy[i].gap || enemy[i].top - player.bottom > enemy[i].gap
-             || player.left - enemy[i].right > enemy[i].gap) {
+        if ( (player.top - enemy[i].bottom > enemy[i].gap || enemy[i].left - player.right > enemy[i].gap || enemy[i].top - player.bottom > enemy[i].gap
+             || player.left - enemy[i].right > enemy[i].gap)) {
             if (enemy[i].left > player.left) {
                 enemy[i].directions.x = -1
             }
