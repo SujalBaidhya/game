@@ -6,11 +6,11 @@ class Guns {
     };
 
     this.img = new Image();
-    this.img.src = "gun.png";  
-    this.currAmmo = 30;   // bullets in current mag
-    this.totalAmmo = 100; // total spare bullets
+    this.img.src = "png/gun.png";  
+    this.currAmmo = 30; 
+    this.totalAmmo = 100; 
     this.magSize=30
-    this.reloadTime = 1000; // ms
+    this.reloadTime = 1000;
     this.reloading = false;
     this.lastShotTime = 0;
   }

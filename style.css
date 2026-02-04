@@ -33,3 +33,6 @@ body {
 .hud-item {
     white-space: nowrap;
 }
+#images{
+    display: none;
+}

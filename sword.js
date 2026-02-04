@@ -1,7 +1,7 @@
 class Sword {
   constructor() {
-    this.length = 50;
-    this.width = 5;
+    this.length = 150;
+    this.width = 30;
     this.isAttacking = false;
     this.attackTime = 0;
     this.attackDuration = 50;
@@ -13,6 +13,8 @@ class Sword {
       length:this.width,
     }
     this.hitStatus=false
+    this.image=new Image()
+    this.image.src="png/sword.png"
   }
   attack() {
     if (!this.isAttacking) {
@@ -37,24 +39,37 @@ class Sword {
   }
   draw(ctx, cx, cy, facing) {
     let angle = this.defaultAngle;
+
     if (this.isAttacking) {
-      const t = this.attackTime / this.attackDuration;
-      const swingRange = Math.PI / 2;
-      const swingStart = -Math.PI / 4;
-      let swing = swingStart + t * swingRange;
-      if (facing === -1) {
-        swing = Math.PI - swing
-      };
-      angle = swing;
+        const t = this.attackTime / this.attackDuration;
+        const swingRange = Math.PI / 2;
+        const swingStart = -Math.PI / 4;
+        let swing = swingStart + t * swingRange;
+
+        if (facing === -1) {
+            swing = Math.PI - swing;
+        }
+
+        angle = swing;
     }
     this.hitbox.x = cx + Math.cos(angle) * this.length;
     this.hitbox.y = cy + Math.sin(angle) * this.length;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(this.hitbox.x, this.hitbox.y);
-    ctx.strokeStyle = "golden";
-    ctx.lineWidth = this.width;
-    ctx.stroke();
-  }
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    if (facing === -1) {
+        ctx.scale(1, -1);
+    }
+    ctx.drawImage(
+        this.image,
+        0,
+        -this.width / 2,
+        this.length,
+        this.width
+    );
+
+    ctx.restore();
+}
+
 }
 export default Sword

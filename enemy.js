@@ -1,6 +1,15 @@
 import Sword from "./sword.js"
 import Guns from "./guns.js"
 import Bullet from "./bullets.js"
+const idle=document.getElementById("idle")
+const walking=document.getElementById("walking")
+const flying=document.getElementById("flying")
+const images=[idle,walking,flying]
+const stateImageMap = {
+    idle: idle,
+    walking: walking,
+    flying: flying,
+};
 class Enemy{
     constructor(x,y,type,delay){
         this.position={
@@ -8,13 +17,14 @@ class Enemy{
             y:y
         }
         this.size={
-            width:50,
-            height:50
+            width:75,
+            height:75
         }
         this.directions={
             x:1,
             y:0
         }
+        this.state="idle"
         this.speed=1
         this.prevleft = 0
         this.prevtop = 0
@@ -26,8 +36,8 @@ class Enemy{
         //     right:right,
         //     bottom:bottom
         // }
-        this.img=new Image()
-        this.img.src="enemy.png"
+        // this.img=new Image()
+        // this.img.src="enemy.png"
         this.type=type
         if(this.type=="sword"){this.weapon=new Sword(),
             this.gap=20
@@ -36,7 +46,7 @@ class Enemy{
             this.gap=500
         }
         this.facing
-        this.state="walking"
+        this.state="idle"
         this.alive=true
         this.delay=delay
         this.lastAttack=0
@@ -55,12 +65,36 @@ class Enemy{
     get bottom(){
         return this.position.y+this.size.height
     }
-    draw(ctx){
-        ctx.beginPath()
-        ctx.rect(this.position.x,this.position.y,this.size.width,this.size.height)
-        ctx.fillStyle="white"
-        ctx.fill()
-        this.weaponDraw(ctx)
+    draw(ctx) {
+    if(this.bottom<960){
+        this.state="flying"
+    }
+    else{
+        this.state="walking"
+    }
+    const img = stateImageMap[this.state] || idle;
+    ctx.save();
+    if (this.facing === -1) {
+        ctx.translate(this.right, this.top);
+        ctx.scale(-1, 1);
+        ctx.drawImage(
+            img,
+            0,
+            0,
+            this.size.width,
+            this.size.height
+        );
+    } else {
+        ctx.drawImage(
+            img,
+            this.left,
+            this.top,
+            this.size.width,
+            this.size.height
+        );
+    }
+    ctx.restore();
+    this.weaponDraw(ctx);
     }
     weaponDraw(ctx){
         if(this.type=="sword"){

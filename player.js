@@ -1,3 +1,8 @@
+const idle=document.getElementById("p_idle")
+const jump=document.getElementById("p_jump")
+const walk1=document.getElementById("p_walk1")
+const walk2=document.getElementById("p_walk2")
+const walk=[walk1,walk2]
 class Player1 {
     constructor() {
         this.position = {
@@ -6,8 +11,8 @@ class Player1 {
         }
         this.gravity = 0.1
         this.size = {
-            width: 150,
-            height: 150
+            width: 100,
+            height: 100
         }
         this.directions = {
             x: 0,
@@ -28,8 +33,10 @@ class Player1 {
         this.hp = 100
         this.alive = true
         this.move = false
-        this.img = new Image()
-        this.img.src = "soldier.png"
+        this.state="idle"
+        this.walkFrame = 0;
+        this.walkTimer = 0;
+        this.walkSpeed = 150;
     }
     get left() {
         return this.position.x
@@ -43,28 +50,56 @@ class Player1 {
     get bottom() {
         return this.position.y + this.size.height
     }
-
     draw(ctx) {
-        const cx = (this.left + this.right) / 2;
-        const cy = (this.top + this.bottom) / 2;
+    let img;
 
-        ctx.save();
-        ctx.translate(cx, cy);
-
-        ctx.scale(this.facing, 1);
-
-        const w = this.size.width;
-        const h = this.size.height;
-        ctx.drawImage(this.img,-w / 2, -h / 2, w, h);
-
-        ctx.restore();
-
+    if (this.state === "jump") {
+        img = jump;
+    } else if (this.state === "walk") {
+        img = walk[this.walkFrame];
+    } else {
+        img = idle;
     }
+    const cx = (this.left + this.right) / 2;
+    const cy = (this.top + this.bottom) / 2;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(this.facing || 1, 1);
+    ctx.drawImage(
+        img,
+        -this.size.width / 2,
+        -this.size.height / 2,
+        this.size.width,
+        this.size.height
+    );
+
+    ctx.restore();
+}
+
     update() {
         this.prevbottom = this.bottom
         this.prevleft = this.left
         this.prevright = this.right
         this.prevtop = this.top
+        if (!this.onTop) {
+            this.state = "jump";
+        } 
+        else if (this.directions.x !== 0) {
+            this.state = "walk";
+        } 
+        else {
+            this.state = "idle";
+        }
+        if (this.state === "walk") {
+        const now = Date.now();
+        if (now - this.walkTimer > this.walkSpeed) {
+            this.walkFrame = (this.walkFrame + 1) % walk.length;
+            this.walkTimer = now;
+        }
+        } 
+        else {
+            this.walkFrame = 0;
+        }
         this.position.x += this.directions.x * this.speed
         this.position.y += this.directions.y * this.speed
         if (!this.onTop) {
