@@ -7,7 +7,7 @@ class Player1 {
     constructor() {
         this.position = {
             x: 0,
-            y: 400
+            y:3000
         }
         this.gravity = 0.1
         this.size = {

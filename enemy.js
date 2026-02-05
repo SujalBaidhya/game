@@ -40,10 +40,10 @@ class Enemy{
         // this.img.src="enemy.png"
         this.type=type
         if(this.type=="sword"){this.weapon=new Sword(),
-            this.gap=20
+            this.gap=100
         }
         if(this.type=="gun"){this.weapon=new Guns(),
-            this.gap=500
+            this.gap=600
         }
         this.facing
         this.state="idle"
@@ -52,6 +52,9 @@ class Enemy{
         this.lastAttack=0
         this.angle=0
         this.hp=20
+        this.onTop=false
+        this.isJumping=false
+        this.fixedDir = Math.random() < 0.5 ? -1 : 1;
     }
     get top(){
         return this.position.y
@@ -66,7 +69,7 @@ class Enemy{
         return this.position.y+this.size.height
     }
     draw(ctx) {
-    if(this.bottom<960){
+    if(this.bottom<900){
         this.state="flying"
     }
     else{

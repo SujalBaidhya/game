@@ -5,15 +5,11 @@ import Map from "./map1.js"
 import Enemy from "./enemy.js"
 import Sword from "./sword.js"
 const world = {
-    width: 3000,
+    width: 5000,
     height: 3000
 }
 const canvas = document.getElementById("canvas")
 const ctx = canvas.getContext("2d")
-const view = {
-    x: 0,
-    y: 0
-}
 const hpText = document.getElementById("hp");
 const ammoText = document.getElementById("ammo");
 const reserveText = document.getElementById("reserve");
@@ -22,103 +18,100 @@ canvas.height = 500
 let player = new Player1()
 let gun = new Guns()
 let keys = {}
-let currentLevel=2
+let currentLevel=1
 let mouseDown=false
 const level1 = [
-    new Map(0, 960, 3000, 40),       
-    new Map(150, 800, 250, 20),
-    new Map(500, 720, 180, 20),
-    new Map(900, 650, 200, 20),
-    new Map(1400, 750, 150, 20),
-    new Map(1800, 680, 180, 20),
-    new Map(400, 0, 20, 300),         
-    new Map(1200, 0, 20, 400),
-    new Map(1600, 620, 20, 80),       
-    new Map(2000, 0, 20, 350),
+    new Map(0, 2900, 5000, 100),
+    new Map(300, 2650, 300, 40),
+    new Map(700, 2500, 300, 40),
+    new Map(1100, 2350, 300, 40),
+    new Map(1500, 2500, 300, 40),
+    new Map(600, 2150, 400, 40),
+    new Map(1300, 2000, 400, 40),
+    new Map(1000, 2700, 40, 200),
 ];
 const level2 = [
-    new Map(0, 960, 3000, 40),
-    new Map(150, 780, 200, 20),
-    new Map(450, 650, 220, 20),
-    new Map(800, 730, 180, 20),
-    new Map(1200, 650, 200, 20),
-    new Map(1600, 700, 150, 20),
-    new Map(2100, 600, 180, 20),
-    new Map(2500, 550, 120, 20),
-    new Map(600, 0, 20, 300),
-    new Map(1400, 600, 20, 100),       
-    new Map(2200, 0, 20, 400),
-];
+    new Map(0, 2900, 5000, 100),
 
+    new Map(250, 2650, 280, 40),
+    new Map(600, 2500, 280, 40),
+    new Map(950, 2350, 280, 40),
+    new Map(1300, 2200, 280, 40),
+
+    new Map(700, 2000, 380, 40),
+    new Map(1200, 1850, 380, 40),
+
+    new Map(900, 2700, 40, 250),
+];
 const level3 = [
-    new Map(0, 960, 3000, 40),
-    new Map(200, 800, 180, 20),
-    new Map(600, 720, 220, 20),
-    new Map(1050, 650, 200, 20),
-    new Map(1500, 720, 180, 20),
-    new Map(1900, 650, 200, 20),
-    new Map(400, 0, 20, 400),
-    new Map(1200, 600, 20, 80),       
-    new Map(2000, 0, 20, 600),
+    new Map(0, 2900, 5000, 100),
+
+    new Map(400, 2700, 500, 40),
+    new Map(1100, 2700, 500, 40),
+    new Map(1800, 2700, 500, 40),
+
+    new Map(700, 2350, 450, 40),
+    new Map(1500, 2350, 450, 40),
+
+    new Map(1000, 2050, 650, 40),
 ];
 const level4 = [
-    new Map(0, 960, 3000, 40),
-    new Map(150, 800, 200, 20),
-    new Map(450, 700, 180, 20),
-    new Map(750, 620, 200, 20),
-    new Map(1100, 680, 180, 20),
-    new Map(1450, 600, 220, 20),
-    new Map(1800, 720, 150, 20),
-    new Map(500, 0, 20, 500),
-    new Map(1000, 550, 20, 60),       
-    new Map(1700, 0, 20, 600),
+    new Map(0, 2900, 5000, 100),
+
+    new Map(300, 2700, 240, 40),
+    new Map(600, 2550, 240, 40),
+    new Map(900, 2400, 240, 40),
+    new Map(1200, 2250, 240, 40),
+    new Map(1500, 2100, 240, 40),
+
+    new Map(1900, 1850, 500, 40),
+
+    new Map(1400, 2700, 40, 250),
 ];
 const level5 = [
-    new Map(0, 960, 3000, 40),
-    new Map(150, 800, 180, 20),
-    new Map(500, 700, 200, 20),
-    new Map(900, 650, 180, 20),
-    new Map(1350, 720, 200, 20),
-    new Map(1800, 640, 220, 20),
-    new Map(2250, 700, 180, 20),
-    new Map(400, 0, 20, 500),
-    new Map(1100, 580, 20, 80),        
-    new Map(1600, 0, 20, 700),
-    new Map(2100, 640, 20, 60),       
+    new Map(0, 2900, 5000, 100),
+    new Map(250, 2700, 360, 40),
+    new Map(700, 2600, 360, 40),
+    new Map(1150, 2500, 360, 40),
+    new Map(1600, 2600, 360, 40),
+    new Map(600, 2200, 500, 40),
+    new Map(1300, 2100, 500, 40),
+    new Map(900, 1800, 700, 40),
+    new Map(2000, 2450, 40, 350),
 ];
 const levels = [level1, level2, level3, level4, level5];
 const enemylevel1=[
-    new Enemy(300,910,"sword",2000),
-    new Enemy(800,910,"gun",1000),
+    new Enemy(300,2825,"sword",2000),
+    new Enemy(800,2825,"gun",1000),
 ]
 const enemylevel2=[
-    new Enemy(210,890,"sword",1800),
-    new Enemy(700,890,"sword",1800),
-    new Enemy(1200,890,"gun",900),
+    new Enemy(210,2825,"sword",1800),
+    new Enemy(700,2825,"sword",1800),
+    new Enemy(1200,2825,"gun",900),
 ]
 const enemylevel3=[
-    new Enemy(150,890,"sword",1500),
-    new Enemy(500,890,"gun",700),
-    new Enemy(900,890,"sword",1500),
-    new Enemy(1400,890,"gun",1000),
+    new Enemy(150,2825,"sword",1500),
+    new Enemy(500,2825,"gun",700),
+    new Enemy(900,2825,"sword",1500),
+    new Enemy(1400,2825,"gun",1000),
 ]
 const enemylevel4=[
-    new Enemy(200,890,"sword",2000),
-    new Enemy(600,890,"gun",1000),
-    new Enemy(900,890,"sword",2000),
-    new Enemy(1400,890,"gun",1000),
-    new Enemy(1500,890,"sword",2000),
-    new Enemy(1100,890,"gun",1000),
+    new Enemy(200,2825,"sword",2000),
+    new Enemy(600,2825,"gun",1000),
+    new Enemy(900,2825,"sword",2000),
+    new Enemy(1400,2825,"gun",1000),
+    new Enemy(1500,2825,"sword",2000),
+    new Enemy(1100,2825,"gun",1000),
 ]
 const enemylevel5=[
-    new Enemy(400,890,"sword",2000),
-    new Enemy(800,890,"gun",1000),
-    new Enemy(300,890,"sword",2000),
-    new Enemy(800,890,"gun",1000),
-    new Enemy(600,890,"sword",2000),
-    new Enemy(800,890,"gun",1000),
-    new Enemy(900,890,"sword",2000),
-    new Enemy(800,890,"gun",1000),
+    new Enemy(400,2825,"sword",2000),
+    new Enemy(800,2825,"gun",1000),
+    new Enemy(300,2825,"sword",2000),
+    new Enemy(800,2825,"gun",1000),
+    new Enemy(600,2825,"sword",2000),
+    new Enemy(800,2825,"gun",1000),
+    new Enemy(900,2825,"sword",2000),
+    new Enemy(800,2825,"gun",1000),
 ]
 const elevels = [
     enemylevel1,
@@ -140,6 +133,10 @@ let mouseactive = false
 let bullets = []
 let ebullets=[]
 const zoom = 0.5;
+const view = {
+    x: world.width - canvas.width / zoom,
+    y:  world.height - canvas.height / zoom
+}
 let levelincreased=false
 document.addEventListener("keydown", (event) => {
     const key = event.key.toLowerCase()
@@ -191,12 +188,13 @@ document.addEventListener("keyup", (event) => {
         }
     }
 })
+
 function obstacleCollision(obj) {
     for (let i = 0; i < map.length; i++) {
         if(map[i].left<view.x+canvas.width/zoom&&map[i].right>view.x&&map[i].top<view.y+canvas.height/zoom&&map[i].bottom>view.y){
             if (obj.right >= map[i].left && obj.left <= map[i].right) {
             if (obj.bottom >= map[i].top && obj.prevbottom <= map[i].top) {
-                if(obj==player){
+               {
                 obj.onTop = true
                 obj.isjumping = false
             }
@@ -224,7 +222,7 @@ function levelup(){
     enemy = elevels[currentLevel-1]
     enemycount = enemy.length
     for(const e of enemy){
-        player.speed=(currentLevel-1)
+        // player.speed=(currentLevel-1)
         e.hp=e.hp*currentLevel
         // e.speed=e.speed*(currentLevel-1)
     }
@@ -237,8 +235,8 @@ function playerCollide(){
         if (player.left < 0) {
             player.position.x = 0
         }
-        if (player.right >= 3000) {
-            player.position.x = 3000 - player.size.width
+        if (player.right >= world.width) {
+            player.position.x = world.width - player.size.width
             if(!levelincreased&&enemycount<=0){
                 player.position.x=0
                 player.hp=100
@@ -246,8 +244,8 @@ function playerCollide(){
                 levelup()
             }
         }
-        if (player.bottom > 1000) {
-            player.position.y = 1000 - player.size.height
+        if (player.bottom > world.height-100) {
+            player.position.y = world.height-100 - player.size.height
         }
 }
 function playerMove() {
@@ -407,7 +405,6 @@ function hasLineOfSight(x1, y1, x2, y2, obstacles) {
     }
     return true;
 }
-
 function lineIntersectsRect(x1, y1, x2, y2, r) {
     return (
         lineIntersectsLine(x1, y1, x2, y2, r.left, r.top, r.right, r.top) ||
@@ -416,17 +413,13 @@ function lineIntersectsRect(x1, y1, x2, y2, r) {
         lineIntersectsLine(x1, y1, x2, y2, r.left, r.bottom, r.left, r.top)
     );
 }
-
 function lineIntersectsLine(x1,y1,x2,y2,x3,y3,x4,y4) {
     const den = (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4);
     if (den === 0) return false;
-
     const t = ((x1-x3)*(y3-y4)-(y1-y3)*(x3-x4))/den;
     const u = -((x1-x2)*(y1-y3)-(y1-y2)*(x1-x3))/den;
-
     return t >= 0 && t <= 1 && u >= 0 && u <= 1;
 }
-
 function enemyMove() {
     const camera= {
         left: view.x,
@@ -438,10 +431,10 @@ function enemyMove() {
         if(enemy[i].alive){
             let ex = (enemy[i].left + enemy[i].right) / 2;
             let ey = (enemy[i].top + enemy[i].bottom) / 2;
-        if(player.left>=enemy[i].right){
+        if(cx>=ex){
             enemy[i].facing=1
         }
-        if(player.right<enemy[i].left){
+        if(cx<ex){
             enemy[i].facing=-1
         }
         if(enemy[i].type=="gun"){
@@ -449,7 +442,7 @@ function enemyMove() {
             let x=(enemy[i].left+enemy[i].right)/2
             enemy[i].angle= Math.atan2(cy-y,cx-x)
         }
-        if ( (player.top - enemy[i].bottom > enemy[i].gap || enemy[i].left - player.right > enemy[i].gap || enemy[i].top - player.bottom > enemy[i].gap
+        if ( (cy - enemy[i].bottom > enemy[i].gap || enemy[i].left - player.right > enemy[i].gap || enemy[i].top - player.bottom > enemy[i].gap
              || player.left - enemy[i].right > enemy[i].gap)) {
             if (enemy[i].left > player.left) {
                 enemy[i].directions.x = -1
@@ -465,25 +458,33 @@ function enemyMove() {
             }
         }
         else {
-            console.log(hasLineOfSight(ex,ey,cx,cy,map))
-            if(hasLineOfSight(ex,ey,cx,cy,map)){
-                enemy[i].directions.x = 0
-                enemy[i].directions.y = 0
-                enemy[i].attack()
-                  
-            }
-           else{ 
+            if(hasLineOfSight(ex, ey - 5, cx, cy, map) ||
+            hasLineOfSight(ex, ey + 5, cx, cy, map)){
             enemy[i].directions.x = 0;
             enemy[i].directions.y = 0;
-             if (Math.abs(cx-ex) > Math.abs(cy-ey)) {
-        enemy[i].directions.y = cy-ey > 0 ? 1 : -1;
-    } else {
-        enemy[i].directions.x = cx-ex > 0 ? 1 : -1;
-    }
+
+            const dx = cx - ex;
+            const dy = cy - ey;
+            enemy[i].directions.y = dy > 0 ? 1 : -1;
+            enemy[i].update();
+            if (enemy[i].colliding) {
+                enemy[i].directions.y = 0;
+                enemy[i].directions.x = dx > 0 ? 1 : -1;
+            }
+                enemy[i].attack()
+                    
+            }
+            else{ 
+                enemy[i].directions.x = enemy[i].fixedDir;
+                if (enemy[i].onTop && cy > ey || cy< ey) {
+                    enemy[i].directions.y = 0;
+                }
+                enemy[i].directions.y = cy > ey ? 1 : -1;
             }
         }
         enemy[i].update()
-        obstacleCollision(enemy[i])}
+       } 
+        obstacleCollision(enemy[i])
         enemyAttack(enemy[i])
         if(enemy[i].type=="gun"&&hasLineOfSight(ex,ey,cx,cy,map)){enemy[i].shoot(player,ebullets,camera)}
     }
@@ -505,9 +506,6 @@ function show() {
     for(const b of ebullets){
         b.draw(ctx)
     }
-    for(const m of map){
-        m.draw(ctx)
-    }
     player.draw(ctx);
     weapon();
     ctx.restore();
@@ -515,6 +513,7 @@ function show() {
     ctx.font = "24px Arial";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
+    ctx.fillText(`Level: ${currentLevel}`, canvas.width-100, 20);
     if (player.hp <= 0) {
         ctx.font = "50px Arial";
         ctx.textAlign = "center";
