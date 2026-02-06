@@ -267,39 +267,26 @@ function totalWaves() {
 }
 function updateWaves(levelIndex) {
     const alive = enemy.some(e => e.alive);
-
-    // Wave still active
     if (alive) return;
-
-    // Wave finished → start cooldown
     if (!waitingForNextWave) {
         waitingForNextWave = true;
         waveCooldown = WAVE_DELAY;
         return;
     }
-
-    // Countdown
     if (waveCooldown > 0) {
         waveCooldown--;
         return;
     }
-
-    // Start next wave or level
     currentWave++;
 
     if (currentWave < waveConfig[levelIndex].length) {
         spawnWave(levelIndex);
     } else {
-        // Level complete
-        if(player.right>world.width){currentLevel++;
+        {
+        currentLevel++;
         currentWave = 0;
         spawnWave(currentLevel - 1);}
     }
-}
-function safeSpawn(pos) {
-    const dx = pos.x - cx;
-    const dy = pos.y - cy;
-    return Math.hypot(dx, dy) > 300;
 }
 function levelup(){
     map=levels[currentLevel-1]
