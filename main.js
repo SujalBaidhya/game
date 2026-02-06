@@ -20,6 +20,9 @@ let gun = new Guns()
 let keys = {}
 let currentLevel=1
 let mouseDown=false
+let waveCooldown = 0;
+let waitingForNextWave = false;
+const WAVE_DELAY = 180;
 const level1 = [
     new Map(0, 2900, 5000, 100),
     new Map(300, 2650, 300, 40),
@@ -80,48 +83,57 @@ const level5 = [
     new Map(2000, 2450, 40, 350),
 ];
 const levels = [level1, level2, level3, level4, level5];
-const enemylevel1=[
-    new Enemy(300,2825,"sword",2000),
-    new Enemy(800,2825,"gun",1000),
-]
-const enemylevel2=[
-    new Enemy(210,2825,"sword",1800),
-    new Enemy(700,2825,"sword",1800),
-    new Enemy(1200,2825,"gun",900),
-]
-const enemylevel3=[
-    new Enemy(150,2825,"sword",1500),
-    new Enemy(500,2825,"gun",700),
-    new Enemy(900,2825,"sword",1500),
-    new Enemy(1400,2825,"gun",1000),
-]
-const enemylevel4=[
-    new Enemy(200,2825,"sword",2000),
-    new Enemy(600,2825,"gun",1000),
-    new Enemy(900,2825,"sword",2000),
-    new Enemy(1400,2825,"gun",1000),
-    new Enemy(1500,2825,"sword",2000),
-    new Enemy(1100,2825,"gun",1000),
-]
-const enemylevel5=[
-    new Enemy(400,2825,"sword",2000),
-    new Enemy(800,2825,"gun",1000),
-    new Enemy(300,2825,"sword",2000),
-    new Enemy(800,2825,"gun",1000),
-    new Enemy(600,2825,"sword",2000),
-    new Enemy(800,2825,"gun",1000),
-    new Enemy(900,2825,"sword",2000),
-    new Enemy(800,2825,"gun",1000),
-]
-const elevels = [
-    enemylevel1,
-    enemylevel2,
-    enemylevel3,
-    enemylevel4,
-    enemylevel5
-]
+const spawnZones = [
+    // Level 1
+    [
+        { x: 100, y: 2600, w: 800, h: 200 },
+        { x: 1200, y: 2400, w: 800, h: 200 }
+    ],
+
+    // Level 2
+    [
+        { x: 200, y: 2700, w: 1000, h: 200 },
+        { x: 1400, y: 2200, w: 800, h: 200 }
+    ]
+];
+const waveConfig = [
+    [
+        { sword: 2, gun: 1 },
+        { sword: 3, gun: 2 }
+    ],
+    [
+        { sword: 3, gun: 2 },
+        { sword: 4, gun: 3 },
+        { sword: 1, gun: 4 }
+    ],
+    [
+        { sword: 3, gun: 2 },
+        { sword: 4, gun: 3 },
+        { sword: 1, gun: 4 },
+        { sword: 4, gun: 3 },
+        { sword: 1, gun: 4 }
+    ],
+    [
+        { sword: 3, gun: 2 },
+        { sword: 4, gun: 3 },
+        { sword: 1, gun: 4 },
+        { sword: 3, gun: 2 },
+        { sword: 4, gun: 3 },
+        { sword: 4, gun: 3 },
+    ],
+    [
+        { sword: 3, gun: 2 },
+        { sword: 4, gun: 3 },
+        { sword: 1, gun: 4 },
+        { sword: 4, gun: 3 },
+        { sword: 4, gun: 3 },
+        { sword: 4, gun: 3 },
+        { sword: 4, gun: 3 },
+    ],
+];
+
 let map=levels[currentLevel-1]
-let enemy = elevels[currentLevel-1]
+let enemy = []
 let enemycount = enemy.length
 let cx = (player.left + player.right) / 2
 let cy = (player.top + player.bottom) / 2
@@ -188,7 +200,6 @@ document.addEventListener("keyup", (event) => {
         }
     }
 })
-
 function obstacleCollision(obj) {
     for (let i = 0; i < map.length; i++) {
         if(map[i].left<view.x+canvas.width/zoom&&map[i].right>view.x&&map[i].top<view.y+canvas.height/zoom&&map[i].bottom>view.y){
@@ -216,6 +227,79 @@ function obstacleCollision(obj) {
             }
         }}
     }
+}
+let currentWave = 0;
+function getSwordSpawn(levelIndex) {
+    const zones = spawnZones[levelIndex];
+    const zone = zones[Math.floor(Math.random() * zones.length)];
+    return {
+        x: zone.x + Math.random() * zone.w,
+        y: 2825
+    };
+}
+function getGunSpawn(levelIndex) {
+    const zones = spawnZones[levelIndex];
+    const zone = zones[Math.floor(Math.random() * zones.length)];
+
+    return {
+        x: zone.x + Math.random() * zone.w,
+        y: zone.y + Math.random() * zone.h
+    };
+}
+
+function spawnWave(levelIndex) {
+    enemy.length = 0;
+    waitingForNextWave = false
+    const wave = waveConfig[levelIndex][currentWave];
+    for (let i = 0; i < wave.sword; i++) {
+        const p = getSwordSpawn(levelIndex);
+        enemy.push(new Enemy(p.x,2825, "sword", 1500));
+    }
+    for (let i = 0; i < wave.gun; i++) {
+        const p = getGunSpawn(levelIndex);
+        enemy.push(new Enemy(p.x, p.y, "gun", 1000));
+    }
+}
+currentWave = 0;
+spawnWave(currentLevel - 1)
+function totalWaves() {
+    return waveConfig[currentLevel - 1].length;
+}
+function updateWaves(levelIndex) {
+    const alive = enemy.some(e => e.alive);
+
+    // Wave still active
+    if (alive) return;
+
+    // Wave finished → start cooldown
+    if (!waitingForNextWave) {
+        waitingForNextWave = true;
+        waveCooldown = WAVE_DELAY;
+        return;
+    }
+
+    // Countdown
+    if (waveCooldown > 0) {
+        waveCooldown--;
+        return;
+    }
+
+    // Start next wave or level
+    currentWave++;
+
+    if (currentWave < waveConfig[levelIndex].length) {
+        spawnWave(levelIndex);
+    } else {
+        // Level complete
+        if(player.right>world.width){currentLevel++;
+        currentWave = 0;
+        spawnWave(currentLevel - 1);}
+    }
+}
+function safeSpawn(pos) {
+    const dx = pos.x - cx;
+    const dy = pos.y - cy;
+    return Math.hypot(dx, dy) > 300;
 }
 function levelup(){
     map=levels[currentLevel-1]
@@ -429,12 +513,12 @@ function enemyMove() {
     };
     for (let i = enemy.length - 1; i >= 0; i--) {
         if(enemy[i].alive){
-            let ex = (enemy[i].left + enemy[i].right) / 2;
-            let ey = (enemy[i].top + enemy[i].bottom) / 2;
-        if(cx>=ex){
+            let enex = (enemy[i].left + enemy[i].right) / 2;
+            let eney = (enemy[i].top + enemy[i].bottom) / 2;
+        if(cx>=enex){
             enemy[i].facing=1
         }
-        if(cx<ex){
+        if(cx<enex){
             enemy[i].facing=-1
         }
         if(enemy[i].type=="gun"){
@@ -450,21 +534,20 @@ function enemyMove() {
             if (enemy[i].right < player.right) {
                 enemy[i].directions.x = 1
             }
-            if (enemy[i].bottom < player.top) {
+           { if (enemy[i].bottom < player.top) {
                 enemy[i].directions.y = 1
             }
             if (enemy[i].top > player.bottom) {
                 enemy[i].directions.y = -1
-            }
+            }}
         }
         else {
-            if(hasLineOfSight(ex, ey - 5, cx, cy, map) ||
-            hasLineOfSight(ex, ey + 5, cx, cy, map)){
+            if(hasLineOfSight(enex, eney - 5, cx, cy, map) ||
+            hasLineOfSight(enex, eney + 5, cx, cy, map)){
             enemy[i].directions.x = 0;
             enemy[i].directions.y = 0;
-
-            const dx = cx - ex;
-            const dy = cy - ey;
+            const dx = cx - enex;
+            const dy = cy - eney;
             enemy[i].directions.y = dy > 0 ? 1 : -1;
             enemy[i].update();
             if (enemy[i].colliding) {
@@ -476,21 +559,23 @@ function enemyMove() {
             }
             else{ 
                 enemy[i].directions.x = enemy[i].fixedDir;
-                if (enemy[i].onTop && cy > ey || cy< ey) {
+                if (enemy[i].onTop && cy > eney || cy< eney) {
                     enemy[i].directions.y = 0;
                 }
-                enemy[i].directions.y = cy > ey ? 1 : -1;
+                enemy[i].directions.y = cy > eney ? 1 : -1;
             }
         }
-        enemy[i].update()
-       } 
         obstacleCollision(enemy[i])
+        enemy[i].update()
         enemyAttack(enemy[i])
-        if(enemy[i].type=="gun"&&hasLineOfSight(ex,ey,cx,cy,map)){enemy[i].shoot(player,ebullets,camera)}
+        if(enemy[i].type=="gun"&&hasLineOfSight(enex,eney,cx,cy,map)){
+            enemy[i].shoot(player,ebullets,camera)
+        }
+       } 
     }
 }
 function show() {
-    ctx.fillStyle = "brown";
+    if(player.hp>0){ctx.fillStyle = "snow";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.scale(zoom, zoom);
@@ -508,12 +593,31 @@ function show() {
     }
     player.draw(ctx);
     weapon();
-    ctx.restore();
-    ctx.fillStyle = "white";
+    ctx.restore();}
+    ctx.fillStyle = "black";
     ctx.font = "24px Arial";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
     ctx.fillText(`Level: ${currentLevel}`, canvas.width-100, 20);
+    ctx.fillStyle = "black";
+    ctx.font = "22px Arial";
+    ctx.textAlign = "right";
+
+    ctx.fillText(
+        `Wave ${currentWave + 1} / ${totalWaves()}`,
+        canvas.width - 120,
+        20
+    );
+
+    if (waitingForNextWave && waveCooldown > 0) {
+        ctx.font = "26px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(
+            `Next wave in ${Math.ceil(waveCooldown / 60)}`,
+            canvas.width / 2,
+            60
+        );
+    }
     if (player.hp <= 0) {
         ctx.font = "50px Arial";
         ctx.textAlign = "center";
@@ -531,9 +635,10 @@ function show() {
 }
 let lastFireTime=0
 function update(){
-    levelincreased=false
+   if(player.hp>0){ levelincreased=false
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     enemyMove();
+    if(player.hp>0){updateWaves(currentLevel - 1);}
     player.onTop = false;
     obstacleCollision(player);
     playerAttackCollision();
@@ -570,7 +675,7 @@ function update(){
     if (view.x < 0) view.x = 0;
     if (view.y < 0) view.y = 0;
     if (view.x + canvas.width / zoom > world.width) view.x = world.width - canvas.width / zoom;
-    if (view.y + canvas.height / zoom > world.height) view.y = world.height - canvas.height / zoom;
+    if (view.y + canvas.height / zoom > world.height) view.y = world.height - canvas.height / zoom;}
 }
 let lastTime = 0;
 const fps = 1000 / 240;

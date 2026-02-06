@@ -26,10 +26,10 @@ class Enemy{
         }
         this.state="idle"
         this.speed=1
-        this.prevleft = 0
-        this.prevtop = 0
-        this.prevright = 0
-        this.prevbottom = 0
+        this.prevleft = 10
+        this.prevtop = 10
+        this.prevright = 10
+        this.prevbottom = 10
         // this.max={
         //     top:top,
         //     left:left,
@@ -69,7 +69,7 @@ class Enemy{
         return this.position.y+this.size.height
     }
     draw(ctx) {
-    if(this.bottom<900){
+    if(!this.onTop){
         this.state="flying"
     }
     else{
@@ -121,7 +121,7 @@ class Enemy{
                 const cy = (this.top + this.bottom) / 2 +Math.sin(this.angle)*50;
                 const px = (player.left + player.right) / 2;
                 const py = (player.top + player.bottom) / 2;
-                const angle = Math.atan2(py - cy, px - cx)+(Math.random() - 0.5) * 1;
+                const angle = Math.atan2(py - cy, px - cx)+(Math.random() - 0.5) *0.1;
                 ebullets.push(new Bullet(cx,cy,angle,this))
                 this.lastAttack = now;
             // }
@@ -133,6 +133,7 @@ class Enemy{
         this.prevright = this.right
         this.prevtop = this.top
         this.position.x+=this.speed*this.directions.x
+        this.onTop=false
         if(this.type=="gun"){this.position.y+=this.speed*this.directions.y}
         // if(this.left<this.max.left){
         //     this.position.x=this.max.left
